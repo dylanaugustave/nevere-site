@@ -1,0 +1,48 @@
+{
+  "id": "06",
+  "slug": "left-field",
+  "title": "Left Field",
+  "bpm": 89,
+  "key": "Bb min",
+  "tags": [
+    "experimental",
+    "off-kilter"
+  ],
+  "filterTags": [
+    "outside the box"
+  ],
+  "audioSrc": "left-field.mp3",
+  "root": 233,
+  "peaks": [
+    0.24,
+    0.21,
+    0.21,
+    0.6,
+    0.68,
+    0.75,
+    0.82,
+    0.91,
+    0.97,
+    0.98,
+    0.98,
+    0.84,
+    1.0,
+    0.96,
+    0.25,
+    0.21,
+    0.21,
+    0.26,
+    0.19,
+    0.24,
+    0.22,
+    0.91,
+    0.97,
+    0.95,
+    0.96,
+    0.85,
+    0.99,
+    1.0
+  ],
+  "loudness": 3923.0,
+  "lufs": -18.96
+}

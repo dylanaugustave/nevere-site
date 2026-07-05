@@ -1,0 +1,48 @@
+{
+  "id": "05",
+  "slug": "motion-carried",
+  "title": "Motion Carried",
+  "bpm": 130,
+  "key": "D maj",
+  "tags": [
+    "anthem",
+    "triumphant"
+  ],
+  "filterTags": [
+    "turn up"
+  ],
+  "audioSrc": "motion-carried.mp3",
+  "root": 294,
+  "peaks": [
+    0.89,
+    0.98,
+    0.92,
+    0.97,
+    0.92,
+    0.94,
+    0.96,
+    0.87,
+    0.79,
+    0.68,
+    0.86,
+    0.81,
+    0.89,
+    0.95,
+    0.89,
+    1.0,
+    0.92,
+    0.97,
+    0.92,
+    0.93,
+    0.86,
+    0.73,
+    0.8,
+    0.76,
+    0.87,
+    0.77,
+    0.57,
+    0.12
+  ],
+  "loudness": 4858.0,
+  "lufs": -15.57
+}

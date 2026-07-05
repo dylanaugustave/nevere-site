@@ -1,0 +1,49 @@
+{
+  "id": "12",
+  "slug": "long-way-up",
+  "title": "Long Way Up",
+  "bpm": 82,
+  "key": "F min",
+  "tags": [
+    "spiritual",
+    "intimate",
+    "slow burner"
+  ],
+  "filterTags": [
+    "in my feelings"
+  ],
+  "audioSrc": "long-way-up.mp3",
+  "root": 220,
+  "peaks": [
+    0.12,
+    0.12,
+    0.12,
+    0.17,
+    0.4,
+    0.44,
+    0.41,
+    0.44,
+    0.4,
+    0.44,
+    0.41,
+    0.41,
+    0.12,
+    0.12,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.55
+  ],
+  "loudness": 3177.0,
+  "lufs": -19.02
+}
