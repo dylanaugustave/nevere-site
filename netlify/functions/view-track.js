@@ -9,11 +9,9 @@ exports.handler = async (event) => {
 
   const store = getStore("track-events");
   const { blobs } = await store.list();
-
   const records = await Promise.all(
     blobs.map(async (b) => JSON.parse(await store.get(b.key)))
   );
-
   records.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   return {
