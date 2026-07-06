@@ -555,36 +555,30 @@
     .pb-title.scrolling .pb-title-inner{ animation:none; }
     .pb-title{ text-overflow:ellipsis; }
   }
-  #pb-scrub{ flex:1; min-width:0; accent-color:var(--accent); cursor:pointer; }
-  .pb-scrub-wrap{ position:relative; flex:1; min-width:0; display:flex; align-items:center; }
-  .pb-scrub-wrap #pb-scrub{ position:relative; z-index:2; }
-  .pb-region-track{
-    position:absolute; left:0; right:0; bottom:-10px; height:4px;
-    background:rgba(255,255,255,0.08); border-radius:2px; pointer-events:none;
+  #pb-scrub{ flex:1; min-width:0; accent-color:var(--accent); cursor:pointer; position:relative; z-index:1; }
+  .pb-scrub-wrap{ position:relative; flex:1; min-width:0; display:flex; align-items:center; height:20px; }
+  .pb-region-overlay{
+    position:absolute; left:0; right:0; top:50%; height:4px; transform:translateY(-50%);
+    pointer-events:none; z-index:2;
   }
   .pb-region-fill{
-    position:absolute; top:0; bottom:0; background:var(--accent); border-radius:2px; opacity:0.55;
+    position:absolute; top:0; bottom:0; background:var(--accent); border-radius:2px; opacity:0.6;
   }
   .pb-region-handle{
     position:absolute; top:50%; width:12px; height:12px; margin-left:-6px;
     background:var(--accent); border-radius:50%; transform:translateY(-50%);
     cursor:grab; pointer-events:auto; touch-action:none;
-    border:2px solid var(--bg);
+    border:2px solid var(--bg); box-shadow:0 0 0 1px var(--accent);
   }
   .pb-region-handle:active{ cursor:grabbing; }
-  .pb-region-toggle{
-    background:none; border:1px solid var(--line); color:var(--muted);
-    font-size:11px; text-transform:lowercase; letter-spacing:0.08em;
-    padding:4px 10px; border-radius:2px; cursor:pointer; transition:color .18s ease, border-color .18s ease;
-  }
-  .pb-region-toggle[aria-pressed="true"]{ color:var(--accent); border-color:var(--accent); }
   .pb-time{ font-size:11px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
   .pb-loop{
     background:none; border:1px solid var(--line); color:var(--muted);
     font-size:11px; text-transform:lowercase; letter-spacing:0.08em;
     padding:4px 10px; border-radius:2px; cursor:pointer; transition:color .18s ease, border-color .18s ease;
+    width:90px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex-shrink:0;
   }
-  .pb-loop[aria-pressed="true"]{ color:var(--accent); border-color:var(--accent); }
+  .pb-loop[data-mode="full"], .pb-loop[data-mode="section"]{ color:var(--accent); border-color:var(--accent); }
   .contact-link{ font-size:15px; text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:4px; transition:border-color .18s ease, color .18s ease; }
   .contact-link:hover{ border-color:var(--accent); color:var(--accent); }
   footer{ display:flex; justify-content:space-between; color:var(--muted); font-size:12px; flex-wrap:wrap; gap:8px; }
@@ -1024,7 +1018,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v90</span>
+      <span class="mono" style="opacity:0.4;">v91</span>
     </footer>
   </section>
 
@@ -1070,15 +1064,14 @@
     <span class="pb-title mono" id="pb-title"></span>
     <div class="pb-scrub-wrap">
       <input type="range" id="pb-scrub" min="0" max="1000" step="1" value="0" aria-label="Seek position">
-      <div class="pb-region-track" id="pb-region-track" hidden>
+      <div class="pb-region-overlay" id="pb-region-overlay" hidden>
         <div class="pb-region-fill" id="pb-region-fill"></div>
         <div class="pb-region-handle" id="pb-region-start" role="slider" aria-label="Loop region start" tabindex="0"></div>
         <div class="pb-region-handle" id="pb-region-end" role="slider" aria-label="Loop region end" tabindex="0"></div>
       </div>
     </div>
     <span class="pb-time mono" id="pb-time">0:00 / 0:00</span>
-    <button class="pb-loop mono" id="pb-loop" aria-pressed="false" title="Loop current beat">loop</button>
-    <button class="pb-region-toggle mono" id="pb-region-toggle" aria-pressed="false" title="Loop a section">section</button>
+    <button class="pb-loop mono" id="pb-loop" data-mode="off" title="Loop: off">loop</button>
   </div>
 
 <script>
@@ -1336,7 +1329,7 @@
 
   // ---- playback: real audio if provided, else a synthesized demo tone ----
   let audioCtx = null; // shared context, also used by playDemo
-  let loopOn = false; // default: advance to next track when a beat ends
+  // loop state now tracked via loopMode ("off" | "full" | "section"), declared with player bar controls below
   const analyserCache = {}; // beat.id -> { analyser, source, dataArray }
   let liveWfRow = null; // .track row currently showing live bars
   let liveWfRaf = null;
@@ -1553,7 +1546,7 @@
       audio = new Audio();
       audio.preload = "none";
       audio.src = beat.audioSrc;
-      audio.loop = loopOn && !regionOn;
+      audio.loop = loopMode === "full";
       audio.volume = normalizedVolume(beat);
       audio.addEventListener("ended", () => {
         if (playingId === beat.id) playNext();
@@ -1572,7 +1565,7 @@
     startRing(btn, () => {
       if (!audio.duration || !isFinite(audio.duration)) return 0;
       if (!scrubbing) timeEl.textContent = fmtTime(audio.currentTime) + " / " + fmtTime(audio.duration);
-      if (regionOn && audio.duration) {
+      if (loopMode === "section" && audio.duration) {
         const startSec = regionStart * audio.duration;
         const endSec = regionEnd * audio.duration;
         if (audio.currentTime < startSec) audio.currentTime = startSec;
@@ -1602,15 +1595,14 @@
   const pbToggle = document.getElementById("pb-toggle");
   const pbScrub = document.getElementById("pb-scrub");
   const pbLoop = document.getElementById("pb-loop");
-  const pbRegionToggle = document.getElementById("pb-region-toggle");
-  const pbRegionTrack = document.getElementById("pb-region-track");
+  const pbRegionOverlay = document.getElementById("pb-region-overlay");
   const pbRegionFill = document.getElementById("pb-region-fill");
   const pbRegionStart = document.getElementById("pb-region-start");
   const pbRegionEnd = document.getElementById("pb-region-end");
   let lastBeat = null;
   let lastBtn = null;
   let scrubbing = false;
-  let regionOn = false;
+  let loopMode = "off"; // off -> full -> section -> off
   let regionStart = 0.2; // fraction of track duration, 0..1
   let regionEnd = 0.4;
 
@@ -1629,7 +1621,7 @@
 
   function dragHandle(handle, isStart) {
     function onMove(clientX) {
-      const rect = pbRegionTrack.getBoundingClientRect();
+      const rect = pbRegionOverlay.getBoundingClientRect();
       let frac = (clientX - rect.left) / rect.width;
       frac = Math.min(1, Math.max(0, frac));
       if (isStart) {
@@ -1654,13 +1646,13 @@
   dragHandle(pbRegionEnd, false);
   renderRegion();
 
-  pbRegionToggle.addEventListener("click", () => {
-    regionOn = !regionOn;
-    pbRegionToggle.setAttribute("aria-pressed", regionOn);
-    pbRegionTrack.hidden = !regionOn;
-    Object.values(audioCache).forEach(a => { a.loop = loopOn && !regionOn; });
-    if (regionOn) {
-      // seed the region around the current playhead so it's immediately useful
+  function applyLoopMode() {
+    pbLoop.dataset.mode = loopMode;
+    pbLoop.textContent = loopMode === "off" ? "loop" : loopMode === "full" ? "loop: full" : "loop: section";
+    pbLoop.title = loopMode === "off" ? "Loop: off" : loopMode === "full" ? "Loop: full track" : "Loop: section";
+    pbRegionOverlay.hidden = loopMode !== "section";
+    Object.values(audioCache).forEach(a => { a.loop = loopMode === "full"; });
+    if (loopMode === "section") {
       const audio = currentAudio();
       if (audio && audio.duration && isFinite(audio.duration)) {
         const cur = audio.currentTime / audio.duration;
@@ -1669,12 +1661,11 @@
         renderRegion();
       }
     }
-  });
+  }
 
   pbLoop.addEventListener("click", () => {
-    loopOn = !loopOn;
-    pbLoop.setAttribute("aria-pressed", loopOn);
-    Object.values(audioCache).forEach(a => { a.loop = loopOn && !regionOn; });
+    loopMode = loopMode === "off" ? "full" : loopMode === "full" ? "section" : "off";
+    applyLoopMode();
   });
 
   pbScrub.addEventListener("input", () => {
