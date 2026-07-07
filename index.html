@@ -530,8 +530,10 @@
     padding:12px clamp(20px,5vw,64px);
     background:rgba(13,11,10,0.95); backdrop-filter:blur(8px);
     border-top:1px solid var(--line);
+    transition:transform .28s cubic-bezier(.16,.84,.44,1), padding .2s ease;
   }
-  .player-bar{ transform:translateY(100%); transition:transform .28s cubic-bezier(.16,.84,.44,1); }
+  .player-bar[data-loop-mode="section"]{ padding-top:22px; padding-bottom:22px; }
+  .player-bar{ transform:translateY(100%); }
   .player-bar.active{ display:flex; transform:translateY(0); animation:barIn .2s ease; }
   @keyframes barIn{ from{ transform:translateY(100%); } to{ transform:translateY(0); } }
   .pb-btn{
@@ -565,7 +567,8 @@
     width:3px; height:16px; background:#fff; border:none; border-radius:1px;
     cursor:pointer; box-shadow:0 0 0 1px var(--bg);
   }
-  .pb-scrub-wrap{ position:relative; flex:1; min-width:0; display:flex; align-items:center; height:20px; }
+  .pb-scrub-wrap{ position:relative; flex:1; min-width:0; display:flex; align-items:center; height:20px; transition:height .2s ease; }
+  .player-bar[data-loop-mode="section"] .pb-scrub-wrap{ height:36px; }
   .pb-region-overlay{
     position:absolute; left:0; right:0; top:50%; height:4px; transform:translateY(-50%);
     pointer-events:none; z-index:2;
@@ -578,7 +581,9 @@
     transform:translateY(-50%);
     cursor:grab; pointer-events:auto; touch-action:none;
     display:flex; align-items:center; justify-content:center;
+    transition:width .2s ease, height .2s ease, margin-left .2s ease;
   }
+  .player-bar[data-loop-mode="section"] .pb-region-handle{ width:24px; height:36px; margin-left:-12px; }
   .pb-region-handle::after{
     content:""; width:3px; height:16px; background:var(--accent); border-radius:1px;
     box-shadow:0 0 0 1px var(--bg);
@@ -1036,7 +1041,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v93</span>
+      <span class="mono" style="opacity:0.4;">v94</span>
     </footer>
   </section>
 
@@ -1673,6 +1678,7 @@
 
   function applyLoopMode() {
     pbLoop.dataset.mode = loopMode;
+    playerBar.dataset.loopMode = loopMode;
     pbLoop.title = loopMode === "off" ? "Loop: off" : loopMode === "full" ? "Loop: full track" : "Loop: section";
     pbLoop.setAttribute("aria-label", pbLoop.title);
     pbRegionOverlay.hidden = loopMode !== "section";
