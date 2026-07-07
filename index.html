@@ -597,6 +597,13 @@
     box-shadow:0 0 0 1px var(--bg);
   }
   .pb-region-handle:active{ cursor:grabbing; }
+  .pb-drag-time{
+    position:absolute; bottom:100%; left:0; margin-bottom:6px; transform:translateX(-50%);
+    background:rgba(13,11,10,0.95); border:1px solid var(--line); border-radius:3px;
+    padding:2px 6px; font-size:11px; color:var(--accent); white-space:nowrap;
+    opacity:0; pointer-events:none; transition:opacity .12s ease; z-index:3;
+  }
+  .pb-drag-time.visible{ opacity:1; }
   .pb-time{ font-size:11px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
   .pb-loop{
     background:none; border:1px solid var(--line); color:var(--muted);
@@ -1049,7 +1056,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v95</span>
+      <span class="mono" style="opacity:0.4;">v96</span>
     </footer>
   </section>
 
@@ -1101,6 +1108,7 @@
         <div class="pb-region-fill" id="pb-region-fill"></div>
         <div class="pb-region-handle" id="pb-region-start" role="slider" aria-label="Loop region start" tabindex="0"></div>
         <div class="pb-region-handle" id="pb-region-end" role="slider" aria-label="Loop region end" tabindex="0"></div>
+        <div class="pb-drag-time mono" id="pb-drag-time"></div>
       </div>
     </div>
     <span class="pb-time mono" id="pb-time">0:00 / 0:00</span>
@@ -1659,27 +1667,74 @@
     pbRegionEnd.style.left = endPct;
   }
 
+  const pbDragTime = document.getElementById("pb-drag-time");
+  const HANDLE_SENSITIVITY = 0.35; // <1 = finger moves further than handle, for finer control
+  const MIN_GAP = 0.02;
+
+  function showDragTime(frac) {
+    const audio = currentAudio();
+    const duration = audio && isFinite(audio.duration) ? audio.duration : 0;
+    pbDragTime.textContent = fmtTime(frac * duration);
+    pbDragTime.style.left = (frac * 100).toFixed(2) + "%";
+    pbDragTime.classList.add("visible");
+  }
+  function hideDragTime() {
+    pbDragTime.classList.remove("visible");
+  }
+  let dragTimeHideTimer = null;
+  function flashDragTime(frac) {
+    showDragTime(frac);
+    clearTimeout(dragTimeHideTimer);
+    dragTimeHideTimer = setTimeout(hideDragTime, 700);
+  }
+
   function dragHandle(handle, isStart) {
-    function onMove(clientX) {
+    function onMove(startFrac, startClientX, clientX) {
       const rect = pbRegionOverlay.getBoundingClientRect();
-      let frac = (clientX - rect.left) / rect.width;
-      frac = Math.min(1, Math.max(0, frac));
+      const deltaFrac = ((clientX - startClientX) / rect.width) * HANDLE_SENSITIVITY;
+      let frac = Math.min(1, Math.max(0, startFrac + deltaFrac));
       if (isStart) {
-        regionStart = Math.min(frac, regionEnd - 0.02);
+        regionStart = Math.min(frac, regionEnd - MIN_GAP);
       } else {
-        regionEnd = Math.max(frac, regionStart + 0.02);
+        regionEnd = Math.max(frac, regionStart + MIN_GAP);
       }
       renderRegion();
+      showDragTime(isStart ? regionStart : regionEnd);
     }
     handle.addEventListener("pointerdown", (e) => {
       handle.setPointerCapture(e.pointerId);
-      const move = (ev) => onMove(ev.clientX);
+      const startFrac = isStart ? regionStart : regionEnd;
+      const startClientX = e.clientX;
+      const move = (ev) => onMove(startFrac, startClientX, ev.clientX);
       const up = () => {
         window.removeEventListener("pointermove", move);
         window.removeEventListener("pointerup", up);
+        hideDragTime();
       };
       window.addEventListener("pointermove", move);
       window.addEventListener("pointerup", up);
+    });
+    handle.addEventListener("keydown", (e) => {
+      const audio = currentAudio();
+      const duration = audio && isFinite(audio.duration) ? audio.duration : 120;
+      const stepSec = e.shiftKey ? 0.5 : 0.05;
+      const step = stepSec / duration;
+      let delta = 0;
+      if (e.key === "ArrowLeft") delta = -step;
+      else if (e.key === "ArrowRight") delta = step;
+      else if (e.key === "Home") delta = -1;
+      else if (e.key === "End") delta = 1;
+      else return;
+      e.preventDefault();
+      if (isStart) {
+        regionStart = Math.min(1, Math.max(0, regionStart + delta));
+        regionStart = Math.min(regionStart, regionEnd - MIN_GAP);
+      } else {
+        regionEnd = Math.min(1, Math.max(0, regionEnd + delta));
+        regionEnd = Math.max(regionEnd, regionStart + MIN_GAP);
+      }
+      renderRegion();
+      flashDragTime(isStart ? regionStart : regionEnd);
     });
   }
   dragHandle(pbRegionStart, true);
