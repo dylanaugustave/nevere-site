@@ -536,6 +536,14 @@
   .player-bar{ transform:translateY(100%); }
   .player-bar.active{ display:flex; transform:translateY(0); animation:barIn .2s ease; }
   @keyframes barIn{ from{ transform:translateY(100%); } to{ transform:translateY(0); } }
+  .pb-left{
+    display:flex; align-items:center; gap:16px; flex-shrink:0;
+    max-width:220px; overflow:hidden;
+    transition:max-width .2s ease, opacity .2s ease, margin-right .2s ease;
+  }
+  .player-bar[data-loop-mode="section"] .pb-left{
+    max-width:0; opacity:0; margin-right:-16px; pointer-events:none;
+  }
   .pb-btn{
     width:36px; height:36px; border-radius:50%; border:none; position:relative;
     background:transparent; color:var(--accent); display:flex; align-items:center; justify-content:center;
@@ -1041,7 +1049,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v94</span>
+      <span class="mono" style="opacity:0.4;">v95</span>
     </footer>
   </section>
 
@@ -1076,15 +1084,17 @@
   </div>
 
   <div class="player-bar" id="player-bar">
-    <button class="pb-btn on" id="pb-toggle" aria-label="Pause or resume">
-      <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
-        <circle class="ring-track" cx="18" cy="18" r="16.5"/>
-        <circle class="ring-progress pb-ring-progress" cx="18" cy="18" r="16.5"/>
-      </svg>
-      <svg class="icon-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
-      <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
-    </button>
-    <span class="pb-title mono" id="pb-title"></span>
+    <div class="pb-left" id="pb-left">
+      <button class="pb-btn on" id="pb-toggle" aria-label="Pause or resume">
+        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+          <circle class="ring-track" cx="18" cy="18" r="16.5"/>
+          <circle class="ring-progress pb-ring-progress" cx="18" cy="18" r="16.5"/>
+        </svg>
+        <svg class="icon-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+      </button>
+      <span class="pb-title mono" id="pb-title"></span>
+    </div>
     <div class="pb-scrub-wrap">
       <input type="range" id="pb-scrub" min="0" max="1000" step="1" value="0" aria-label="Seek position">
       <div class="pb-region-overlay" id="pb-region-overlay" hidden>
