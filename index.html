@@ -1056,7 +1056,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v97</span>
+      <span class="mono" style="opacity:0.4;">v98</span>
     </footer>
   </section>
 
@@ -1599,6 +1599,16 @@
       audio.addEventListener("ended", () => {
         if (playingId === beat.id) playNext();
       });
+      audio.addEventListener("timeupdate", () => {
+        // Runs off the media clock, not rAF, so this keeps enforcing the loop
+        // region even when the tab is backgrounded and rAF is throttled/paused.
+        if (loopMode === "section" && audio.duration && isFinite(audio.duration)) {
+          const startSec = regionStart * audio.duration;
+          const endSec = regionEnd * audio.duration;
+          if (audio.currentTime < startSec) audio.currentTime = startSec;
+          if (audio.currentTime >= endSec) audio.currentTime = startSec;
+        }
+      });
       audioCache[beat.id] = audio;
     }
     audio.play().then(() => {
@@ -1613,12 +1623,6 @@
     startRing(btn, () => {
       if (!audio.duration || !isFinite(audio.duration)) return 0;
       if (!scrubbing) timeEl.textContent = fmtTime(audio.currentTime) + " / " + fmtTime(audio.duration);
-      if (loopMode === "section" && audio.duration) {
-        const startSec = regionStart * audio.duration;
-        const endSec = regionEnd * audio.duration;
-        if (audio.currentTime < startSec) audio.currentTime = startSec;
-        if (audio.currentTime >= endSec) audio.currentTime = startSec;
-      }
       return audio.currentTime / audio.duration;
     });
     activeStop = () => { audio.pause(); stopLiveWaveform(); }; // pause keeps currentTime, so next play resumes
