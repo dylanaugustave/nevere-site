@@ -565,7 +565,7 @@
     .pb-title.scrolling .pb-title-inner{ animation:none; }
     .pb-title{ text-overflow:ellipsis; }
   }
-  #pb-scrub{ flex:1; min-width:0; accent-color:var(--accent); cursor:pointer; position:relative; z-index:1; }
+  #pb-scrub{ flex:1; min-width:0; accent-color:var(--accent); cursor:pointer; position:relative; z-index:1; touch-action:none; }
   #pb-scrub::-webkit-slider-thumb{
     -webkit-appearance:none; appearance:none;
     width:3px; height:16px; background:#fff; border-radius:1px;
@@ -1056,7 +1056,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v96</span>
+      <span class="mono" style="opacity:0.4;">v97</span>
     </footer>
   </section>
 
@@ -1764,6 +1764,29 @@
     applyLoopMode();
   });
 
+  const SCRUB_SENSITIVITY = 0.35; // matches loop-handle sensitivity for consistent feel
+  pbScrub.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    pbScrub.setPointerCapture(e.pointerId);
+    const rect = pbScrub.getBoundingClientRect();
+    const startFrac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    pbScrub.value = Math.round(startFrac * 1000);
+    pbScrub.dispatchEvent(new Event("input"));
+    const startClientX = e.clientX;
+    function move(ev) {
+      const deltaFrac = ((ev.clientX - startClientX) / rect.width) * SCRUB_SENSITIVITY;
+      const frac = Math.min(1, Math.max(0, startFrac + deltaFrac));
+      pbScrub.value = Math.round(frac * 1000);
+      pbScrub.dispatchEvent(new Event("input"));
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      pbScrub.dispatchEvent(new Event("change"));
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  });
   pbScrub.addEventListener("input", () => {
     scrubbing = true;
     if (lastBeat && audioCache[lastBeat.id]) {
