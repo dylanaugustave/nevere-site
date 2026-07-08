@@ -335,6 +335,8 @@
     border-bottom:1px solid var(--line);
   }
   .brand{ font-size:20px; font-weight:700; letter-spacing:0.01em; text-decoration:none; }
+  .brand-group{ display:flex; flex-direction:column; gap:2px; }
+  .brand-tagline{ font-size:10px; color:var(--muted); letter-spacing:0.04em; }
   nav{ display:flex; gap:30px; }
   nav a{ text-decoration:none; font-size:13px; text-transform:lowercase; letter-spacing:0.1em; color:var(--muted); transition:color .18s ease; }
   nav a:hover{ color:var(--text); }
@@ -653,7 +655,10 @@
 <div class="ambient-bg" aria-hidden="true"></div>
 
   <header>
-    <a class="brand display" href="#top" aria-label="nevere — back to top">nevere</a>
+    <div class="brand-group">
+      <a class="brand display" href="#top" aria-label="nevere — back to top">nevere</a>
+      <span class="brand-tagline mono">music that isn't bound by time or place.</span>
+    </div>
     <nav aria-label="Primary">
       <a href="#beats">Beats</a>
       <a href="#licensing">Licensing</a>
@@ -1141,7 +1146,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v113</span>
+      <span class="mono" style="opacity:0.4;">v115</span>
     </footer>
   </section>
 
