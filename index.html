@@ -303,12 +303,12 @@
   html{ scroll-behavior:smooth; }
   body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; text-transform:lowercase; }
   .ambient-bg{
-    position:fixed; inset:-100px; z-index:0; pointer-events:none;
+    position:fixed; inset:-160px; z-index:0; pointer-events:none;
     background:
-      radial-gradient(ellipse 700px 600px at 20% 20%, rgba(255,176,32,0.12), rgba(255,176,32,0.03) 40%, transparent 70%),
-      radial-gradient(ellipse 800px 700px at 80% 70%, rgba(31,111,102,0.16), rgba(31,111,102,0.04) 40%, transparent 70%);
+      radial-gradient(ellipse 700px 600px at 20% 20%, rgba(255,176,32,0.11), rgba(255,176,32,0.05) 30%, rgba(255,176,32,0.02) 55%, transparent 75%),
+      radial-gradient(ellipse 800px 700px at 80% 70%, rgba(31,111,102,0.15), rgba(31,111,102,0.06) 30%, rgba(31,111,102,0.02) 55%, transparent 75%);
     background-repeat:no-repeat;
-    filter:blur(60px);
+    filter:blur(100px);
     animation:ambientDrift 40s ease-in-out infinite;
     will-change:background-position;
   }
@@ -1150,7 +1150,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v119</span>
+      <span class="mono" style="opacity:0.4;">v120</span>
     </footer>
   </section>
 
