@@ -320,15 +320,22 @@
   @media (prefers-reduced-motion: reduce){
     .ambient-bg{ animation:none; }
   }
-  .cursor-glow{
-    position:fixed; top:0; left:0; z-index:1; width:120px; height:120px;
-    border-radius:50%; pointer-events:none;
-    background:radial-gradient(circle, rgba(255,176,32,0.16), transparent 55%);
-    transform:translate(-50%,-50%);
-    opacity:0; transition:opacity .3s ease;
+  .cursor-dot{
+    position:fixed; top:0; left:0; z-index:100; width:6px; height:6px;
+    border-radius:50%; background:var(--accent); pointer-events:none;
+    transform:translate(-50%,-50%); opacity:0; transition:opacity .2s ease;
     will-change:transform;
   }
-  .cursor-glow.active{ opacity:1; }
+  .cursor-ring{
+    position:fixed; top:0; left:0; z-index:100; width:32px; height:32px;
+    border-radius:50%; border:1px solid var(--accent); pointer-events:none;
+    transform:translate(-50%,-50%); opacity:0;
+    transition:opacity .2s ease, width .22s cubic-bezier(.16,.84,.44,1), height .22s cubic-bezier(.16,.84,.44,1), background .22s ease;
+    will-change:transform;
+  }
+  .cursor-dot.active, .cursor-ring.active{ opacity:1; }
+  .cursor-ring.hover{ width:52px; height:52px; background:rgba(255,176,32,0.1); }
+  body.custom-cursor, body.custom-cursor *{ cursor:none !important; }
   .display{ font-family:'Space Grotesk', sans-serif; }
   .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; }
   a{ color:inherit; }
@@ -675,7 +682,8 @@
 </head>
 <body id="top">
 <div class="ambient-bg" aria-hidden="true"></div>
-<div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
   <header>
     <div class="brand-group">
@@ -1150,7 +1158,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v131</span>
+      <span class="mono" style="opacity:0.4;">v132</span>
     </footer>
   </section>
 
@@ -1462,26 +1470,42 @@
     menuBtn.setAttribute("aria-expanded", false);
   }));
 
-  // ---- cursor glow (desktop only) ----
+  // ---- custom cursor (desktop only, replaces native pointer) ----
   if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    const glow = document.getElementById("cursor-glow");
-    let targetX = 0, targetY = 0, curX = 0, curY = 0, glowActive = false, hideTimer = null;
+    const dot = document.getElementById("cursor-dot");
+    const ring = document.getElementById("cursor-ring");
+    document.body.classList.add("custom-cursor"); // only hides native cursor once this actually mounts
+    let targetX = 0, targetY = 0, ringX = 0, ringY = 0, active = false;
     function loop() {
-      curX += (targetX - curX) * 0.18;
-      curY += (targetY - curY) * 0.18;
-      glow.style.transform = `translate(${curX}px, ${curY}px) translate(-50%, -50%)`;
+      ringX += (targetX - ringX) * 0.2;
+      ringY += (targetY - ringY) * 0.2;
+      dot.style.transform = `translate(${targetX}px, ${targetY}px) translate(-50%, -50%)`;
+      ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
     window.addEventListener("mousemove", (e) => {
       targetX = e.clientX;
       targetY = e.clientY;
-      if (!glowActive) { glow.classList.add("active"); glowActive = true; }
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => { glow.classList.remove("active"); glowActive = false; }, 2200);
+      if (!active) {
+        dot.classList.add("active");
+        ring.classList.add("active");
+        active = true;
+      }
     }, { passive: true });
     document.addEventListener("mouseleave", () => {
-      glow.classList.remove("active"); glowActive = false;
+      dot.classList.remove("active");
+      ring.classList.remove("active");
+      active = false;
+    });
+    const HOVER_TARGETS = "a, button, input, textarea, .play-btn, .pb-loop, .pb-btn, .filter-tag, .sort-toggle, .sort-option, .track";
+    document.addEventListener("mouseover", (e) => {
+      if (e.target.closest(HOVER_TARGETS)) ring.classList.add("hover");
+    });
+    document.addEventListener("mouseout", (e) => {
+      if (e.target.closest(HOVER_TARGETS) && !e.relatedTarget?.closest(HOVER_TARGETS)) {
+        ring.classList.remove("hover");
+      }
     });
   }
 
