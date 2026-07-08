@@ -302,6 +302,23 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html{ scroll-behavior:smooth; }
   body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; text-transform:lowercase; }
+  .ambient-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 600px 500px at 20% 20%, rgba(255,176,32,0.05), transparent 60%),
+      radial-gradient(ellipse 700px 600px at 80% 70%, rgba(31,111,102,0.07), transparent 60%);
+    background-repeat:no-repeat;
+    animation:ambientDrift 40s ease-in-out infinite;
+    will-change:background-position;
+  }
+  @keyframes ambientDrift{
+    0%   { background-position: 0% 0%, 100% 100%; }
+    50%  { background-position: 15% 10%, 85% 90%; }
+    100% { background-position: 0% 0%, 100% 100%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ambient-bg{ animation:none; }
+  }
   .display{ font-family:'Space Grotesk', sans-serif; }
   .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; }
   a{ color:inherit; }
@@ -633,6 +650,7 @@
 </style>
 </head>
 <body id="top">
+<div class="ambient-bg" aria-hidden="true"></div>
 
   <header>
     <a class="brand display" href="#top" aria-label="nevere — back to top">nevere</a>
@@ -1123,7 +1141,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v112</span>
+      <span class="mono" style="opacity:0.4;">v113</span>
     </footer>
   </section>
 
