@@ -448,11 +448,15 @@
     display:grid; grid-template-columns:44px 1fr auto auto auto; align-items:center;
     gap:20px; padding:18px 16px; border-top:1px solid var(--line);
     max-height:260px; overflow:hidden;
-    transition:background .18s ease, opacity .3s ease, max-height .3s ease, padding .3s ease, border-color .3s ease;
+    transition:background .18s ease, opacity .3s ease, max-height .3s ease, padding .3s ease, border-color .3s ease, transform .5s cubic-bezier(.16,.84,.44,1);
   }
+  .track.pending{ opacity:0; transform:translateY(14px); }
   .track.hidden{
     max-height:0; padding-top:0; padding-bottom:0; opacity:0;
     border-color:transparent; pointer-events:none;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .track.pending{ opacity:1; transform:none; }
   }
   .track:last-child{ border-bottom:1px solid var(--line); }
   .track:hover{ background:var(--surface); }
@@ -494,6 +498,8 @@
   .wf-bar.on{ animation-name:pulse; animation-iteration-count:infinite; animation-timing-function:ease-in-out; background:var(--accent); }
   .wf.live .wf-bar{ animation:none !important; transform:none !important; background:var(--accent); }
   @keyframes pulse{ 0%,100%{ transform:scaleY(0.75); } 50%{ transform:scaleY(1.15); } }
+  @keyframes idleSway{ 0%,100%{ transform:scaleY(0.92); } 50%{ transform:scaleY(1.08); } }
+  .wf-bar.idle{ animation-name:idleSway; animation-iteration-count:infinite; animation-timing-function:ease-in-out; animation-duration:2.6s; }
 
   .tiers{ display:grid; grid-template-columns:1fr; gap:1px; background:var(--line); border:1px solid var(--line); }
   @media (min-width:760px){
@@ -1131,7 +1137,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v127</span>
+      <span class="mono" style="opacity:0.4;">v129</span>
     </footer>
   </section>
 
@@ -1233,9 +1239,15 @@
 
   // rows are static HTML (for SEO); JS generates the waveform bars from real peak data
   document.querySelectorAll(".wf[data-bpm]").forEach((wf) => {
-    wf.innerHTML = Array.from({ length: 28 }, () =>
-      `<span class="wf-bar" style="height:8px;"></span>`
-    ).join("");
+    const row = wf.closest(".track");
+    const beat = row ? BEATS.find(b => b.id === row.dataset.id) : null;
+    const peaks = beat && Array.isArray(beat.peaks) ? beat.peaks : null;
+    wf.innerHTML = Array.from({ length: 28 }, (_, i) => {
+      const p = peaks ? peaks[i] : 0.5;
+      const h = Math.round(4 + p * 18); // same 4–22px range the live analyser uses
+      const delay = (i * 0.09).toFixed(2); // stagger so bars don't sway in lockstep
+      return `<span class="wf-bar idle" style="height:${h}px; animation-delay:-${delay}s;"></span>`;
+    }).join("");
   });
 
   // ---- filter and sort ----
@@ -1453,6 +1465,27 @@
   }, { threshold: 0.1, rootMargin: "0px 0px -60px 0px" });
   document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
+  // ---- track row stagger reveal on scroll ----
+  const trackRevealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const row = entry.target;
+      trackRevealObserver.unobserve(row);
+      const visible = [...trackList.querySelectorAll(".track:not(.hidden)")];
+      const idx = visible.indexOf(row);
+      const delay = Math.min(Math.max(idx, 0) * 45, 400);
+      row.style.transitionDelay = delay + "ms";
+      requestAnimationFrame(() => {
+        row.classList.remove("pending");
+        setTimeout(() => { row.style.transitionDelay = ""; }, delay + 550);
+      });
+    });
+  }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+  document.querySelectorAll(".track").forEach(row => {
+    row.classList.add("pending");
+    trackRevealObserver.observe(row);
+  });
+
   // ---- playback: real audio if provided, else a synthesized demo tone ----
   let audioCtx = null; // shared context, also used by playDemo
   // loop state now tracked via loopMode ("off" | "full" | "section"), declared with player bar controls below
@@ -1490,6 +1523,7 @@
     if (!bars.length) return;
     liveWfRow = row;
     wf.classList.add("live");
+    bars.forEach(bar => bar.classList.remove("idle"));
     const nBins = dataArray.length;
     const nBars = bars.length;
     // log-scaled bin mapping: low bars sample narrow low-frequency ranges,
@@ -1524,7 +1558,13 @@
       const wf = liveWfRow.querySelector(".wf");
       if (wf) {
         wf.classList.remove("live");
-        wf.querySelectorAll(".wf-bar").forEach(bar => { bar.style.height = "8px"; });
+        const beat = BEATS.find(b => b.id === liveWfRow.dataset.id);
+        const peaks = beat && Array.isArray(beat.peaks) ? beat.peaks : null;
+        wf.querySelectorAll(".wf-bar").forEach((bar, i) => {
+          const p = peaks ? peaks[i] : 0.5;
+          bar.style.height = Math.round(4 + p * 18) + "px";
+          bar.classList.add("idle");
+        });
       }
     }
     liveWfRow = null;
