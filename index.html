@@ -320,6 +320,15 @@
   @media (prefers-reduced-motion: reduce){
     .ambient-bg{ animation:none; }
   }
+  .cursor-glow{
+    position:fixed; top:0; left:0; z-index:1; width:260px; height:260px;
+    border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,176,32,0.10), transparent 70%);
+    transform:translate(-50%,-50%);
+    opacity:0; transition:opacity .3s ease;
+    will-change:transform;
+  }
+  .cursor-glow.active{ opacity:1; }
   .display{ font-family:'Space Grotesk', sans-serif; }
   .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; }
   a{ color:inherit; }
@@ -463,9 +472,12 @@
   .play-btn{
     width:44px; height:44px; border-radius:50%; border:none;
     background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center;
-    font-size:14px; flex-shrink:0; transition:color .18s ease; position:relative;
+    font-size:14px; flex-shrink:0; transition:color .18s ease, box-shadow .25s ease; position:relative;
   }
   .play-btn:hover, .play-btn.on{ color:var(--accent); }
+  @media (hover:hover){
+    .play-btn:hover{ box-shadow:0 0 0 8px rgba(255,176,32,0.08), 0 0 22px 4px rgba(255,176,32,0.12); }
+  }
   .play-btn .ring{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); pointer-events:none; }
   .play-btn .ring-track{ fill:none; stroke:#463e33; stroke-width:2.5; }
   .play-btn:hover .ring-track{ stroke:var(--accent); }
@@ -663,6 +675,7 @@
 </head>
 <body id="top">
 <div class="ambient-bg" aria-hidden="true"></div>
+<div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
 
   <header>
     <div class="brand-group">
@@ -1137,7 +1150,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v129</span>
+      <span class="mono" style="opacity:0.4;">v130</span>
     </footer>
   </section>
 
@@ -1448,6 +1461,29 @@
     mobileNav.classList.remove("open");
     menuBtn.setAttribute("aria-expanded", false);
   }));
+
+  // ---- cursor glow (desktop only) ----
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    const glow = document.getElementById("cursor-glow");
+    let targetX = 0, targetY = 0, curX = 0, curY = 0, glowActive = false, hideTimer = null;
+    function loop() {
+      curX += (targetX - curX) * 0.18;
+      curY += (targetY - curY) * 0.18;
+      glow.style.transform = `translate(${curX}px, ${curY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+    window.addEventListener("mousemove", (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!glowActive) { glow.classList.add("active"); glowActive = true; }
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => { glow.classList.remove("active"); glowActive = false; }, 2200);
+    }, { passive: true });
+    document.addEventListener("mouseleave", () => {
+      glow.classList.remove("active"); glowActive = false;
+    });
+  }
 
   // ---- hero reveal ----
   requestAnimationFrame(() => {
