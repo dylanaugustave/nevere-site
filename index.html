@@ -321,14 +321,6 @@
   @media (prefers-reduced-motion: reduce){
     .ambient-bg{ animation:none; }
   }
-  .grain-overlay{
-    display:none;
-    position:fixed; inset:0; z-index:1; pointer-events:none;
-    opacity:0.035; mix-blend-mode:overlay;
-    background-repeat:repeat;
-    image-rendering:crisp-edges;
-    image-rendering:pixelated;
-  }
   .cursor-dot{
     position:fixed; top:0; left:0; z-index:100; width:6px; height:6px;
     border-radius:50%; background:var(--accent); pointer-events:none;
@@ -683,7 +675,6 @@
 </head>
 <body id="top">
 <div class="ambient-bg" aria-hidden="true"></div>
-<div class="grain-overlay" aria-hidden="true"></div>
 <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
 
   <header>
@@ -1159,7 +1150,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v139</span>
+      <span class="mono" style="opacity:0.4;">v141</span>
     </footer>
   </section>
 
@@ -1498,26 +1489,6 @@
     menuBtn.setAttribute("aria-expanded", false);
   }));
 
-  // ---- grain texture (true random static, not Perlin — no seam artifacts when tiled) ----
-  (() => {
-    const size = 128;
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    const imageData = ctx.createImageData(size, size);
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      const v = Math.floor(Math.random() * 255);
-      imageData.data[i] = v;
-      imageData.data[i + 1] = v;
-      imageData.data[i + 2] = v;
-      imageData.data[i + 3] = 255;
-    }
-    ctx.putImageData(imageData, 0, 0);
-    const grainEl = document.querySelector(".grain-overlay");
-    if (grainEl) grainEl.style.backgroundImage = `url(${canvas.toDataURL()})`;
-  })();
-
   // ---- custom cursor (desktop only, replaces native pointer) ----
   if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     const dot = document.getElementById("cursor-dot");
@@ -1794,17 +1765,20 @@
   let ambientLevel = 0; // smoothed 0..1, persists across frames for a gentle lerp
   function startAmbientReactivity(beat, audio) {
     stopAmbientReactivity();
-    const { analyser, dataArray } = getAnalyser(beat, audio);
+    const { analyser } = getAnalyser(beat, audio);
     const ambientEl = document.querySelector(".ambient-bg");
-    const nBins = dataArray.length;
+    const timeData = new Uint8Array(analyser.fftSize); // dedicated buffer — do not share with the waveform bars' frequency data
     function tick() {
-      analyser.getByteFrequencyData(dataArray);
-      let sum = 0;
-      for (let i = 0; i < nBins; i++) sum += dataArray[i];
-      const avg = (sum / nBins) / 255; // 0..1 overall loudness this frame
-      ambientLevel += (avg - ambientLevel) * 0.05; // slow lerp — breathing, not flickering
-      ambientEl.style.setProperty("--glow-a", (0.09 + ambientLevel * 0.07).toFixed(3));
-      ambientEl.style.setProperty("--glow-b", (0.12 + ambientLevel * 0.09).toFixed(3));
+      analyser.getByteTimeDomainData(timeData);
+      let sumSquares = 0;
+      for (let i = 0; i < timeData.length; i++) {
+        const v = (timeData[i] - 128) / 128; // -1..1
+        sumSquares += v * v;
+      }
+      const rms = Math.sqrt(sumSquares / timeData.length); // 0..~1, actually tracks perceived loudness
+      ambientLevel += (rms - ambientLevel) * 0.08;
+      ambientEl.style.setProperty("--glow-a", (0.09 + ambientLevel * 0.18).toFixed(3));
+      ambientEl.style.setProperty("--glow-b", (0.12 + ambientLevel * 0.22).toFixed(3));
       ambientRaf = requestAnimationFrame(tick);
     }
     tick();
