@@ -339,8 +339,12 @@
   .track{
     display:grid; grid-template-columns:44px 1fr auto auto auto; align-items:center;
     gap:20px; padding:18px 16px; border-top:1px solid var(--line);
-    max-height:260px; overflow:hidden;
-    transition:background .18s ease, opacity .3s ease, max-height .3s ease, padding .3s ease, border-color .3s ease, transform .5s cubic-bezier(.16,.84,.44,1);
+    max-height:260px; overflow:hidden; position:relative;
+    transition:background .18s ease, opacity .3s ease, max-height .3s ease, padding .3s ease, border-color .3s ease, transform .3s ease;
+  }
+  .track::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:0;
+    background:var(--accent); transition:width .2s ease;
   }
   .track.pending{ opacity:0; transform:translateY(14px); }
   .track.hidden{
@@ -351,7 +355,8 @@
     .track.pending{ opacity:1; transform:none; }
   }
   .track:last-child{ border-bottom:1px solid var(--line); }
-  .track:hover{ background:var(--surface); }
+  .track:hover{ background:var(--surface); transform:translateX(4px); }
+  .track:hover::before{ width:3px; }
   .play-btn{
     width:44px; height:44px; border-radius:50%; border:none;
     background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center;
@@ -1030,7 +1035,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v146</span>
+      <span class="mono" style="opacity:0.4;">v147</span>
     </footer>
   </section>
 
