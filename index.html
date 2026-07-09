@@ -1157,7 +1157,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v134</span>
+      <span class="mono" style="opacity:0.4;">v135</span>
     </footer>
   </section>
 
@@ -1272,6 +1272,13 @@
     requestAnimationFrame(tick);
   }
   animateCount(document.getElementById("track-count"), BEATS.length, " tracks");
+  // pageshow + persisted catches back/forward-cache restores (e.g. Safari swipe-back),
+  // which reuse the page without re-running the script, so the plain call above alone would miss those.
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) {
+      animateCount(document.getElementById("track-count"), BEATS.length, " tracks");
+    }
+  });
 
   // rows are static HTML (for SEO); JS generates the waveform bars from real peak data
   document.querySelectorAll(".wf[data-bpm]").forEach((wf) => {
