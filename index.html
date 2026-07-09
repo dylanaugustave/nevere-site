@@ -304,10 +304,9 @@
   body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; text-transform:lowercase; }
   .ambient-bg{
     position:fixed; inset:-100px; z-index:0; pointer-events:none;
-    --glow-a:0.09; --glow-b:0.12;
     background:
-      radial-gradient(ellipse 700px 600px at 20% 20%, rgba(255,176,32,var(--glow-a)), transparent 70%),
-      radial-gradient(ellipse 800px 700px at 80% 70%, rgba(31,111,102,var(--glow-b)), transparent 70%);
+      radial-gradient(ellipse 700px 600px at 20% 20%, rgba(255,176,32,0.09), transparent 70%),
+      radial-gradient(ellipse 800px 700px at 80% 70%, rgba(31,111,102,0.12), transparent 70%);
     background-repeat:no-repeat;
     filter:blur(60px);
     animation:ambientDrift 40s ease-in-out infinite;
@@ -472,12 +471,9 @@
   .play-btn{
     width:44px; height:44px; border-radius:50%; border:none;
     background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center;
-    font-size:14px; flex-shrink:0; transition:color .18s ease, box-shadow .25s ease; position:relative;
+    font-size:14px; flex-shrink:0; transition:color .18s ease; position:relative;
   }
   .play-btn:hover, .play-btn.on{ color:var(--accent); }
-  @media (hover:hover){
-    .play-btn:hover{ box-shadow:0 0 0 8px rgba(255,176,32,0.08), 0 0 22px 4px rgba(255,176,32,0.12); }
-  }
   .play-btn .ring{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); pointer-events:none; }
   .play-btn .ring-track{ fill:none; stroke:#463e33; stroke-width:2.5; }
   .play-btn:hover .ring-track{ stroke:var(--accent); }
@@ -1150,7 +1146,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v141</span>
+      <span class="mono" style="opacity:0.4;">v144</span>
     </footer>
   </section>
 
@@ -1314,12 +1310,14 @@
 
   const allTags = [...new Set(BEATS.flatMap(b => b.filterTags))];
   allTags.forEach(tag => {
+    const count = BEATS.filter(b => b.filterTags.includes(tag)).length;
     const btn = document.createElement("button");
     btn.className = "filter-tag";
-    btn.textContent = tag;
+    btn.dataset.tag = tag;
+    btn.textContent = `${tag} (${count})`;
     btn.addEventListener("click", () => {
       activeTag = activeTag === tag ? null : tag;
-      document.querySelectorAll(".filter-tag").forEach(b => b.classList.toggle("active", b.textContent === activeTag));
+      document.querySelectorAll(".filter-tag[data-tag]").forEach(b => b.classList.toggle("active", b.dataset.tag === activeTag));
       applyFilter();
     });
     filterTagsEl.appendChild(btn);
@@ -1761,38 +1759,6 @@
     return Math.min(1, Math.max(0.15, gain)); // cap ceiling at 1 (HTML audio max); floor avoids near-silence on extreme outliers
   }
 
-  let ambientRaf = null;
-  let ambientLevel = 0; // smoothed 0..1, persists across frames for a gentle lerp
-  function startAmbientReactivity(beat, audio) {
-    stopAmbientReactivity();
-    const { analyser } = getAnalyser(beat, audio);
-    const ambientEl = document.querySelector(".ambient-bg");
-    const timeData = new Uint8Array(analyser.fftSize); // dedicated buffer — do not share with the waveform bars' frequency data
-    function tick() {
-      analyser.getByteTimeDomainData(timeData);
-      let sumSquares = 0;
-      for (let i = 0; i < timeData.length; i++) {
-        const v = (timeData[i] - 128) / 128; // -1..1
-        sumSquares += v * v;
-      }
-      const rms = Math.sqrt(sumSquares / timeData.length); // 0..~1, actually tracks perceived loudness
-      ambientLevel += (rms - ambientLevel) * 0.08;
-      ambientEl.style.setProperty("--glow-a", (0.09 + ambientLevel * 0.18).toFixed(3));
-      ambientEl.style.setProperty("--glow-b", (0.12 + ambientLevel * 0.22).toFixed(3));
-      ambientRaf = requestAnimationFrame(tick);
-    }
-    tick();
-  }
-  function stopAmbientReactivity() {
-    if (ambientRaf) cancelAnimationFrame(ambientRaf);
-    ambientRaf = null;
-    const ambientEl = document.querySelector(".ambient-bg");
-    if (ambientEl) {
-      ambientEl.style.removeProperty("--glow-a");
-      ambientEl.style.removeProperty("--glow-b");
-    }
-  }
-
   function playReal(beat, btn) {
     let audio = audioCache[beat.id];
     if (!audio) {
@@ -1820,7 +1786,6 @@
       if (playingId !== beat.id) return; // a newer play() call superseded this one
       const row = btn.closest(".track");
       if (row) startLiveWaveform(beat, row);
-      startAmbientReactivity(beat, audio);
     }).catch((err) => {
       console.error("Playback failed, falling back to demo tone:", err);
       playDemo(beat, btn);
@@ -1831,7 +1796,7 @@
       if (!scrubbing) timeEl.textContent = fmtTime(audio.currentTime) + " / " + fmtTime(audio.duration);
       return audio.currentTime / audio.duration;
     });
-    activeStop = () => { audio.pause(); stopLiveWaveform(); stopAmbientReactivity(); }; // pause keeps currentTime, so next play resumes
+    activeStop = () => { audio.pause(); stopLiveWaveform(); }; // pause keeps currentTime, so next play resumes
   }
 
   function playNext() {
