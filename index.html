@@ -324,7 +324,6 @@
   .grain-overlay{
     position:fixed; inset:0; z-index:1; pointer-events:none;
     opacity:0.035; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-repeat:repeat;
   }
   .cursor-dot{
@@ -1157,7 +1156,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v136</span>
+      <span class="mono" style="opacity:0.4;">v137</span>
     </footer>
   </section>
 
@@ -1495,6 +1494,26 @@
     mobileNav.classList.remove("open");
     menuBtn.setAttribute("aria-expanded", false);
   }));
+
+  // ---- grain texture (true random static, not Perlin — no seam artifacts when tiled) ----
+  (() => {
+    const size = 128;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.createImageData(size, size);
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      const v = Math.floor(Math.random() * 255);
+      imageData.data[i] = v;
+      imageData.data[i + 1] = v;
+      imageData.data[i + 2] = v;
+      imageData.data[i + 3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    const grainEl = document.querySelector(".grain-overlay");
+    if (grainEl) grainEl.style.backgroundImage = `url(${canvas.toDataURL()})`;
+  })();
 
   // ---- custom cursor (desktop only, replaces native pointer) ----
   if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
