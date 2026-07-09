@@ -1035,7 +1035,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v148</span>
+      <span class="mono" style="opacity:0.4;">v151</span>
     </footer>
   </section>
 
@@ -1251,11 +1251,11 @@
   loadMoreBtn.addEventListener("click", () => {
     loadMoreBtn.blur();
     if (loadMoreBtn.textContent === "show less") {
-      loadMoreBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+      visibleLimit = PAGE_SIZE;
+      applyPagination();
       setTimeout(() => {
-        visibleLimit = PAGE_SIZE;
-        applyPagination();
-      }, 400);
+        loadMoreBtn.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 320);
     } else {
       visibleLimit += PAGE_SIZE;
       applyPagination();
