@@ -1157,7 +1157,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v135</span>
+      <span class="mono" style="opacity:0.4;">v136</span>
     </footer>
   </section>
 
@@ -1260,16 +1260,20 @@
       el.textContent = target + suffix;
       return;
     }
-    const duration = 900;
-    const start = performance.now();
-    function tick(now) {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-      const value = Math.round(eased * target);
-      el.textContent = value + suffix;
-      if (t < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+    el.textContent = "0" + suffix; // hold at 0 during the settle delay so nothing flashes early
+    const settleDelay = 400; // lets layout/fonts/paint settle before counting starts, so it's actually seen
+    const duration = 1400;
+    setTimeout(() => {
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        const value = Math.round(eased * target);
+        el.textContent = value + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }, settleDelay);
   }
   animateCount(document.getElementById("track-count"), BEATS.length, " tracks");
   // pageshow + persisted catches back/forward-cache restores (e.g. Safari swipe-back),
