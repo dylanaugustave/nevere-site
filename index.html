@@ -185,7 +185,7 @@
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   html{ scroll-behavior:smooth; }
-  body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; text-transform:lowercase; }
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; text-transform:lowercase; overflow-anchor:none; }
   .ambient-bg{
     position:fixed; inset:-100px; z-index:0; pointer-events:none;
     background:
@@ -340,6 +340,7 @@
     display:grid; grid-template-columns:44px 1fr auto auto auto; align-items:center;
     gap:20px; padding:18px 16px; border-top:1px solid var(--line);
     max-height:260px; overflow:hidden; position:relative;
+    overflow-anchor:none;
     transition:background .18s ease, opacity .3s ease, max-height .3s ease, padding .3s ease, border-color .3s ease, transform .3s ease;
   }
   .track::before{
@@ -1035,7 +1036,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v151</span>
+      <span class="mono" style="opacity:0.4;">v152</span>
     </footer>
   </section>
 
