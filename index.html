@@ -1140,7 +1140,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v163</span>
+      <span class="mono" style="opacity:0.4;">v164</span>
     </footer>
   </section>
 
@@ -1354,7 +1354,12 @@
       row.classList.toggle("hidden", shown > visibleLimit);
     });
     loadMoreBtn.hidden = matchCount <= PAGE_SIZE;
-    loadMoreBtn.textContent = matchCount <= visibleLimit ? "show less" : "load more";
+    if (matchCount <= visibleLimit) {
+      loadMoreBtn.textContent = "show less";
+    } else {
+      const remaining = Math.min(PAGE_SIZE, matchCount - visibleLimit);
+      loadMoreBtn.textContent = `load more (${remaining})`;
+    }
   }
 
   loadMoreBtn.addEventListener("click", () => {
