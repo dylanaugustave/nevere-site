@@ -160,6 +160,13 @@
       "url": "https://neverebeats.com/#raj",
       "genre": ["trap", "melancholic"],
       "byArtist": { "@id": "https://neverebeats.com/#person" }
+    },
+    {
+      "@type": "MusicRecording",
+      "name": "peripheral",
+      "url": "https://neverebeats.com/#peripheral",
+      "genre": ["lofi", "extended outro"],
+      "byArtist": { "@id": "https://neverebeats.com/#person" }
     }
   ]
 }
@@ -183,7 +190,7 @@
     --accent:#ffb020;
     --accent2:#1f6f66;
   }
-  *{ box-sizing:border-box; margin:0; padding:0; }
+  *{ box-sizing:border-box; margin:0; padding:0; overflow-anchor:none; }
   html{ scroll-behavior:smooth; }
   body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; text-transform:lowercase; overflow-anchor:none; }
   .ambient-bg{
@@ -981,6 +988,25 @@
         <a class="track-dl mono" href="raj.mp3" download title="Free download — credit prod. nevere">download</a>
         <button class="track-share mono" data-share="raj" title="Copy link to this beat">share</button>
       </div>
+      <div class="track" data-id="20" id="peripheral">
+        <button class="play-btn" aria-label="Play Peripheral">
+          <svg class="ring" viewBox="0 0 44 44" aria-hidden="true">
+            <circle class="ring-track" cx="22" cy="22" r="20.5"/>
+            <circle class="ring-progress" cx="22" cy="22" r="20.5"/>
+          </svg>
+          <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+        </button>
+        <div class="track-main">
+          <h3 class="track-title">Peripheral</h3>
+          <div class="track-tags"><span class="tag">lofi</span><span class="tag">extended outro</span></div>
+          <div class="track-meta-mobile mono">95 bpm · D min</div>
+        </div>
+        <div class="wf" data-bpm="95"></div>
+        <div class="track-meta mono"><span>95 bpm</span><span>D min</span></div>
+        <a class="track-dl mono" href="peripheral.mp3" download title="Free download — credit prod. nevere">download</a>
+        <button class="track-share mono" data-share="peripheral" title="Copy link to this beat">share</button>
+      </div>
       <!-- BUILD:ROWS_END -->
     </div>
     <button class="load-more mono" id="load-more" hidden>load more</button>
@@ -1036,7 +1062,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v152</span>
+      <span class="mono" style="opacity:0.4;">v154</span>
     </footer>
   </section>
 
@@ -1124,6 +1150,7 @@
     { id: "17", title: "Free Bird", bpm: 80, key: "E maj", tags: ["house", "experimental", "half-time switch"], filterTags: ["outside the box"], price: 0, audioSrc: "free-bird.mp3", root: 330, peaks: [0.78, 0.79, 0.84, 0.96, 0.96, 0.85, 0.96, 0.81, 0.89, 0.8, 0.76, 0.35, 0.38, 0.48, 0.48, 0.99, 0.85, 0.9, 1.0, 0.99, 1.0, 0.85, 0.89, 0.99, 0.79, 0.77, 0.83, 0.77], loudness: 5105.8, lufs: -18.12 },
     { id: "18", title: "Oh", bpm: 100, key: "G maj", tags: ["808-heavy", "sample-based", "whimsical"], filterTags: ["turn up"], price: 0, audioSrc: "oh.mp3", root: 196, peaks: [0.93, 0.74, 0.84, 0.74, 0.65, 0.78, 0.74, 0.7, 0.67, 0.83, 0.73, 0.75, 0.78, 0.67, 0.56, 0.73, 0.57, 1.0, 0.75, 0.73, 0.86, 0.74, 0.74, 0.74, 0.66, 0.72, 0.65, 0.61], loudness: 10308.6, lufs: -16.70 },
     { id: "19", title: "Raj", bpm: 87, key: "G maj", tags: ["trap", "melancholic"], filterTags: ["in my feelings"], price: 0, audioSrc: "raj.mp3", root: 196, peaks: [0.19, 0.16, 0.53, 0.69, 0.7, 0.98, 0.97, 0.96, 0.95, 0.21, 0.2, 0.92, 0.96, 0.95, 0.93, 1.0, 0.97, 0.19, 0.2, 0.91, 0.99, 0.94, 0.94, 0.97, 0.98, 0.7, 0.25, 0.22], loudness: 5476.6, lufs: -20.03 },
+    { id: "20", title: "Peripheral", bpm: 95, key: "D min", tags: ["lofi", "extended outro"], filterTags: ["outside the box"], price: 0, audioSrc: "peripheral.mp3", root: 147, peaks: [0.01, 1.0, 0.91, 0.99, 0.99, 0.91, 0.99, 0.94, 0.98, 0.96, 0.95, 0.59, 0.31, 0.56, 0.98, 0.91, 0.98, 0.9, 0.99, 0.98, 0.92, 0.97, 0.93, 0.59, 0.02, 0.02, 0.02, 0.02], loudness: 5780.1, lufs: -17.32 },
     // BUILD:BEATS_ARRAY_END
   ];
 
