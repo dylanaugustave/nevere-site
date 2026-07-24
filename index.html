@@ -387,12 +387,6 @@
     max-height:0; padding-top:0; padding-bottom:0; opacity:0;
     border-color:transparent; pointer-events:none;
   }
-  /* Show Less test: first fade/shift rows without changing document height.
-     Only after this visual exit finishes are the rows collapsed from layout. */
-  .track.collapse-exit{
-    opacity:0; transform:translateY(-8px); pointer-events:none;
-    transition:opacity .22s ease, transform .22s ease, background .18s ease;
-  }
   @media (prefers-reduced-motion:reduce){
     .track.pending{ opacity:1; transform:none; }
   }
@@ -1422,49 +1416,19 @@
       shown++;
       row.classList.toggle("hidden", shown > visibleLimit);
     });
-    loadMoreBtn.hidden = matchCount <= PAGE_SIZE;
     if (matchCount <= visibleLimit) {
-      loadMoreBtn.textContent = "show less";
+      loadMoreBtn.hidden = true;
     } else {
+      loadMoreBtn.hidden = false;
       const remaining = Math.min(PAGE_SIZE, matchCount - visibleLimit);
       loadMoreBtn.textContent = `load more (${remaining})`;
     }
   }
 
-  let showLessInProgress = false;
   loadMoreBtn.addEventListener("click", () => {
     loadMoreBtn.blur();
-    if (showLessInProgress) return;
-
-    if (loadMoreBtn.textContent === "show less") {
-      const matchingRows = [...trackList.querySelectorAll(".track:not(.filtered-out)")];
-      const rowsToCollapse = matchingRows.slice(PAGE_SIZE).filter(row => !row.classList.contains("hidden"));
-
-      if (!rowsToCollapse.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        visibleLimit = PAGE_SIZE;
-        applyPagination();
-        return;
-      }
-
-      showLessInProgress = true;
-      rowsToCollapse.forEach(row => row.classList.add("collapse-exit"));
-
-      // Keep every row's layout height fixed during the visual fade. Once the
-      // fade is done, collapse the batch in one layout update instead of
-      // continuously shrinking max-height/padding underneath Safari's viewport.
-      setTimeout(() => {
-        visibleLimit = PAGE_SIZE;
-        trackList.classList.add("nav-reveal-instant");
-        applyPagination();
-        void trackList.offsetHeight;
-        trackList.classList.remove("nav-reveal-instant");
-        rowsToCollapse.forEach(row => row.classList.remove("collapse-exit"));
-        showLessInProgress = false;
-      }, 230);
-    } else {
-      visibleLimit += PAGE_SIZE;
-      applyPagination();
-    }
+    visibleLimit += PAGE_SIZE;
+    applyPagination();
   });
 
   const sortToggle = document.getElementById("sort-toggle");
