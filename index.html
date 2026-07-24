@@ -1206,7 +1206,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v182</span>
+      <span class="mono" style="opacity:0.4;">v183</span>
     </footer>
   </section>
 
@@ -1284,6 +1284,14 @@
   </div>
 
 <script>
+  // Normal refreshes start at the top; beat-specific hash links keep their direct-link behavior.
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  if (!location.hash) {
+    window.scrollTo(0, 0);
+    window.addEventListener("pageshow", () => window.scrollTo(0, 0), { once: true });
+  }
   const BEATS = [
     // BUILD:BEATS_ARRAY_START
     { id: "01", title: "Po' Man's Dreams", bpm: 85, key: "A min", tags: ["dark", "angelic"], filterTags: ["in my feelings"], price: 0, audioSrc: "po-mans-dreams.mp3", root: 220, peaks: [0.3, 0.61, 0.89, 0.78, 0.88, 0.88, 0.74, 0.74, 0.81, 1.0, 0.92, 0.93, 0.93, 0.96, 0.77, 0.74, 0.99, 0.95, 0.92, 0.97, 0.92, 0.92, 0.95, 0.98, 0.95, 0.89, 0.94, 0.12], loudness: 1994.5, lufs: -25.03 },
