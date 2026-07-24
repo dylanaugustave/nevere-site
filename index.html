@@ -464,12 +464,6 @@
   .track-price{ font-size:14px; color:var(--text); white-space:nowrap; }
   .track-dl{ font-size:13px; color:var(--accent); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; white-space:nowrap; transition:border-color .18s ease; }
   .track-dl:hover{ border-color:var(--accent); }
-  .copy-credit{
-    margin-left:10px; padding:0; background:none; border:none;
-    color:var(--accent); font-size:11px; letter-spacing:0.04em;
-    text-transform:lowercase; cursor:pointer;
-  }
-  .copy-credit:hover{ text-decoration:underline; text-underline-offset:3px; }
   .wf{ display:none; gap:1px; align-items:center; height:24px; width:70px; overflow:hidden; }
 
   @media (min-width:640px){
@@ -700,9 +694,8 @@
       <h2 class="section-title display">catalog</h2>
       <span class="section-count mono" id="track-count">20 tracks</span>
     </div>
-    <p class="mono catalog-credit" style="color:var(--muted); font-size:12px; margin:-28px 0 28px;">
+    <p class="mono" style="color:var(--muted); font-size:12px; margin:-28px 0 28px;">
       free non-exclusive leases. credit required: prod. nevere.
-      <button type="button" class="copy-credit mono" id="copy-credit">copy credit</button>
     </p>
     <div class="filter-bar">
       <div class="filter-bar-main">
@@ -1234,7 +1227,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v189</span>
+      <span class="mono" style="opacity:0.4;">v190</span>
     </footer>
   </section>
 
@@ -1396,18 +1389,6 @@
 
   // ---- filter and sort ----
   const filterTagsEl = document.getElementById("filter-tags");
-  const copyCreditBtn = document.getElementById("copy-credit");
-  copyCreditBtn?.addEventListener("click", async () => {
-    const credit = "prod. nevere";
-    try {
-      await navigator.clipboard.writeText(credit);
-      const original = copyCreditBtn.textContent;
-      copyCreditBtn.textContent = "copied ✓";
-      setTimeout(() => { copyCreditBtn.textContent = original; }, 1500);
-    } catch (err) {
-      console.error("Copy credit failed:", err);
-    }
-  });
 
 let activeTag = null;
 
