@@ -1206,7 +1206,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v181</span>
+      <span class="mono" style="opacity:0.4;">v182</span>
     </footer>
   </section>
 
@@ -1370,9 +1370,12 @@
   function updateBackToFilters() {
     if (!backToFiltersBtn || !filterBar) return;
     const rect = filterBar.getBoundingClientRect();
+    const catalog = document.getElementById("catalog");
+    const catalogRect = catalog ? catalog.getBoundingClientRect() : null;
     const header = document.querySelector("header");
     const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
-    backToFiltersBtn.classList.toggle("visible", rect.bottom < headerBottom + 12);
+    const insideCatalog = catalogRect && catalogRect.bottom > headerBottom && catalogRect.top < window.innerHeight;
+    backToFiltersBtn.classList.toggle("visible", insideCatalog && rect.bottom < headerBottom + 12);
   }
 
   backToFiltersBtn?.addEventListener("click", () => {
