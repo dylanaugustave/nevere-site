@@ -428,12 +428,13 @@
   .track:hover::before{ width:3px; }
   .track.nav-pulse{
     background:var(--surface);
-    animation:navTrackPulse .52s cubic-bezier(.16,.84,.44,1) both;
+    animation:navTrackPulse .95s cubic-bezier(.16,.84,.44,1) both;
   }
   .track.nav-pulse::before{ width:3px; }
   @keyframes navTrackPulse{
     0%{ transform:translateX(0); }
-    35%{ transform:translateX(4px); }
+    22%{ transform:translateX(4px); }
+    62%{ transform:translateX(4px); }
     100%{ transform:translateX(0); }
   }
   .play-btn{
@@ -1226,7 +1227,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v185</span>
+      <span class="mono" style="opacity:0.4;">v186</span>
     </footer>
   </section>
 
@@ -1929,7 +1930,7 @@ let activeTag = null;
     target.classList.remove("nav-pulse");
     void target.offsetWidth; // restart the pulse even on rapid repeated navigation
     target.classList.add("nav-pulse");
-    setTimeout(() => target.classList.remove("nav-pulse"), 560);
+    setTimeout(() => target.classList.remove("nav-pulse"), 1050);
 
     // Let the player/row state paint first, then measure one settled layout.
     requestAnimationFrame(() => requestAnimationFrame(() => scrollTrackForNavigation(target)));
