@@ -1193,7 +1193,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v177</span>
+      <span class="mono" style="opacity:0.4;">v178</span>
     </footer>
   </section>
 
@@ -1889,7 +1889,32 @@
     void target.offsetWidth; // restart the pulse even on rapid repeated navigation
     target.classList.add("nav-pulse");
     setTimeout(() => target.classList.remove("nav-pulse"), 560);
-    target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    scrollTrackForNavigation(target);
+  }
+
+  function scrollTrackForNavigation(target) {
+    const header = document.querySelector("header");
+    const player = document.getElementById("player-bar");
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+    const playerTop = player && player.classList.contains("active")
+      ? player.getBoundingClientRect().top
+      : window.innerHeight;
+    const margin = 16;
+    const usableTop = headerBottom + margin;
+    const usableBottom = playerTop - margin;
+    const rect = target.getBoundingClientRect();
+
+    // Only move the page when the whole row is not already visible in the usable
+    // viewport. Center it between the sticky header and fixed player so neither
+    // control can cover the selected track on mobile.
+    if (rect.top < usableTop || rect.bottom > usableBottom) {
+      const usableCenter = usableTop + (usableBottom - usableTop) / 2;
+      const rowCenter = rect.top + rect.height / 2;
+      window.scrollBy({
+        top: rowCenter - usableCenter,
+        behavior: "smooth"
+      });
+    }
   }
 
   function playNext() {
