@@ -1174,7 +1174,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v174</span>
+      <span class="mono" style="opacity:0.4;">v175</span>
     </footer>
   </section>
 
@@ -2050,6 +2050,29 @@
 
   pbPrev.addEventListener("click", playPrevious);
   pbNext.addEventListener("click", playNext);
+
+  // ---- desktop keyboard playback controls ----
+  document.addEventListener("keydown", (e) => {
+    const target = e.target;
+    const tag = target && target.tagName ? target.tagName.toLowerCase() : "";
+    const isEditable = target && (target.isContentEditable || ["input", "textarea", "select", "button", "a"].includes(tag));
+    if (isEditable || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+
+    if (e.code === "Space") {
+      if (!lastBeat || !lastBtn) return;
+      e.preventDefault();
+      pbToggle.click();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      playPrevious();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      playNext();
+    } else if (e.key.toLowerCase() === "l") {
+      e.preventDefault();
+      pbLoop.click();
+    }
+  });
 
   pbToggle.addEventListener("click", () => {
     if (!lastBeat || !lastBtn) return;
