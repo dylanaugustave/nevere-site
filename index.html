@@ -314,14 +314,6 @@
     .load-more:hover{ color:var(--accent); border-color:var(--accent); }
   }
   .load-more[hidden]{ display:none; }
-  .surprise-btn{
-    background:none; border:1px solid var(--line); color:var(--muted);
-    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em;
-    padding:6px 10px; border-radius:2px; cursor:pointer; text-transform:lowercase;
-    transition:color .18s ease, border-color .18s ease, transform .18s ease;
-  }
-  .surprise-btn:hover{ color:var(--accent); border-color:var(--accent); transform:translateY(-1px); }
-  .surprise-btn:active{ transform:translateY(0); }
   .sort-dropdown{ position:relative; margin-left:auto; }
   .sort-toggle{
     background:var(--surface); border:1px solid var(--line); color:var(--muted);
@@ -380,7 +372,7 @@
   .section-count{ color:var(--muted); font-size:13px; }
 
   .track{
-    display:grid; grid-template-columns:44px 1fr auto auto auto; align-items:center;
+    display:grid; grid-template-columns:44px 1fr auto auto auto auto; align-items:center;
     gap:20px; padding:18px 16px; border-top:1px solid var(--line);
     max-height:260px; overflow:hidden; position:relative;
     overflow-anchor:none;
@@ -431,7 +423,7 @@
   .wf{ display:none; gap:1px; align-items:center; height:24px; width:70px; overflow:hidden; }
 
   @media (min-width:640px){
-    .track{ grid-template-columns:44px 1fr 70px auto auto auto; }
+    .track{ grid-template-columns:44px 1fr 70px auto auto auto auto; }
     .wf{ display:flex; }
   }
 
@@ -481,6 +473,7 @@
   .track-share{
     background:none; border:none; color:var(--muted); font-size:12px;
     padding:4px 8px; letter-spacing:0.04em; transition:color .18s ease;
+    white-space:nowrap;
   }
   .track-share:hover{ color:var(--accent); }
   .track.highlight{ background:var(--surface); position:relative; }
@@ -508,8 +501,8 @@
   .player-bar.active{ display:flex; transform:translateY(0); animation:barIn .2s ease; }
   @keyframes barIn{ from{ transform:translateY(100%); } to{ transform:translateY(0); } }
   .pb-left{
-    display:flex; align-items:center; gap:16px; flex-shrink:0;
-    max-width:220px; overflow:hidden;
+    display:flex; align-items:center; gap:10px; flex-shrink:0;
+    max-width:280px; overflow:hidden;
     transition:max-width .2s ease, opacity .2s ease, margin-right .2s ease;
   }
   .player-bar[data-loop-mode="section"] .pb-left{
@@ -520,6 +513,13 @@
     background:transparent; color:var(--accent); display:flex; align-items:center; justify-content:center;
     flex-shrink:0;
   }
+  .pb-skip{
+    width:28px; height:28px; border:none; background:transparent; color:var(--muted);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:color .18s ease;
+  }
+  .pb-skip:hover{ color:var(--accent); }
+  .pb-skip svg{ width:14px; height:14px; display:block; }
   .pb-btn .ring{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); pointer-events:none; }
   .pb-btn .ring-track{ fill:none; stroke:#463e33; stroke-width:2; }
   .pb-btn .ring-progress{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-dasharray:103.7; stroke-dashoffset:103.7; }
@@ -649,7 +649,6 @@
         <button id="filter-toggle" class="filter-tag mono" aria-expanded="false">filter</button>
         <div class="filter-tags" id="filter-tags" hidden></div>
       </div>
-      <button class="surprise-btn mono" id="surprise-btn" type="button">surprise me</button>
       <div class="sort-dropdown">
         <button class="sort-toggle mono" id="sort-toggle" aria-haspopup="listbox" aria-expanded="false">
           <span id="sort-toggle-label">newest first</span><span class="caret">▼</span>
@@ -1175,7 +1174,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v169</span>
+      <span class="mono" style="opacity:0.4;">v173</span>
     </footer>
   </section>
 
@@ -1211,6 +1210,9 @@
 
   <div class="player-bar" id="player-bar">
     <div class="pb-left" id="pb-left">
+      <button class="pb-skip" id="pb-prev" aria-label="Previous beat" title="Previous beat">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM18 5v14l-9-7z"/></svg>
+      </button>
       <button class="pb-btn on" id="pb-toggle" aria-label="Pause or resume">
         <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
           <circle class="ring-track" cx="18" cy="18" r="16.5"/>
@@ -1218,6 +1220,9 @@
         </svg>
         <svg class="icon-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
         <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+      </button>
+      <button class="pb-skip" id="pb-next" aria-label="Next beat" title="Next beat">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM6 5v14l9-7z"/></svg>
       </button>
       <span class="pb-title mono" id="pb-title"></span>
     </div>
@@ -1480,32 +1485,6 @@
     trackList.appendChild(row);
   });
   applyPagination();
-
-  // ---- surprise me ----
-  const surpriseBtn = document.getElementById("surprise-btn");
-  let lastSurpriseId = null;
-
-  surpriseBtn.addEventListener("click", () => {
-    const candidates = [...trackList.querySelectorAll(".track:not(.hidden)")];
-    if (!candidates.length) return;
-
-    let pool = candidates;
-    if (candidates.length > 1 && lastSurpriseId) {
-      pool = candidates.filter(row => row.dataset.id !== lastSurpriseId);
-    }
-
-    const row = pool[Math.floor(Math.random() * pool.length)];
-    lastSurpriseId = row.dataset.id;
-
-    row.scrollIntoView({ behavior: "smooth", block: "center" });
-    row.classList.add("highlight");
-    setTimeout(() => row.classList.remove("highlight"), 2200);
-
-    setTimeout(() => {
-      const btn = row.querySelector(".play-btn");
-      if (btn) btn.click();
-    }, 220);
-  });
 
   // ---- render licensing tiers ----
   const tierList = document.getElementById("tier-list");
@@ -1864,23 +1843,36 @@
     activeStop = () => { audio.pause(); stopLiveWaveform(); }; // pause keeps currentTime, so next play resumes
   }
 
-  function playNext() {
+  function playAdjacent(direction) {
     const rows = [...trackList.querySelectorAll(".track:not(.hidden)")];
     if (!rows.length) return;
-    const current = rows.findIndex(r => r.dataset.id === playingId);
-    const next = rows[(current + 1) % rows.length];
-    if (rows.length === 1 || next.dataset.id === playingId) {
-      const audio = audioCache[playingId];
+    const currentId = playingId || (lastBeat && lastBeat.id);
+    let current = rows.findIndex(r => r.dataset.id === currentId);
+    if (current < 0) current = direction > 0 ? -1 : 0;
+    const targetIndex = (current + direction + rows.length) % rows.length;
+    const target = rows[targetIndex];
+    if (rows.length === 1 && target.dataset.id === currentId) {
+      const audio = audioCache[currentId];
       if (audio) { audio.currentTime = 0; audio.play(); }
       return;
     }
-    next.querySelector(".play-btn").click();
-    next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    target.querySelector(".play-btn").click();
+    target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function playNext() {
+    playAdjacent(1);
+  }
+
+  function playPrevious() {
+    playAdjacent(-1);
   }
 
   const playerBar = document.getElementById("player-bar");
   const pbTitle = document.getElementById("pb-title");
   const pbToggle = document.getElementById("pb-toggle");
+  const pbPrev = document.getElementById("pb-prev");
+  const pbNext = document.getElementById("pb-next");
   const pbScrub = document.getElementById("pb-scrub");
   const pbLoop = document.getElementById("pb-loop");
   const pbRegionOverlay = document.getElementById("pb-region-overlay");
@@ -2046,6 +2038,9 @@
     }
     scrubbing = false;
   });
+
+  pbPrev.addEventListener("click", playPrevious);
+  pbNext.addEventListener("click", playNext);
 
   pbToggle.addEventListener("click", () => {
     if (!lastBeat || !lastBtn) return;
