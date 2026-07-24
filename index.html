@@ -391,6 +391,9 @@
     .track.pending{ opacity:1; transform:none; }
   }
   .track:last-child{ border-bottom:1px solid var(--line); }
+  /* Prev/next may expose a new pagination batch. Suppress only that reveal's
+     layout transition so the navigation scroll can measure the final row position. */
+  #track-list.nav-reveal-instant .track{ transition:none !important; }
   .track:hover{ background:var(--surface); transform:translateX(4px); }
   .track:hover::before{ width:3px; }
   .track.nav-pulse{
@@ -1193,7 +1196,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v178</span>
+      <span class="mono" style="opacity:0.4;">v179</span>
     </footer>
   </section>
 
@@ -1881,7 +1884,14 @@
     // reveal enough catalog rows to include it before starting playback.
     if (target.classList.contains("hidden")) {
       visibleLimit = Math.max(visibleLimit, Math.ceil((targetIndex + 1) / PAGE_SIZE) * PAGE_SIZE);
+
+      // Navigation needs a stable final layout before calculating its scroll target.
+      // Keep the normal Load More animation, but expose this batch instantly so rows
+      // expanding above the destination cannot move it during the smooth scroll.
+      trackList.classList.add("nav-reveal-instant");
       applyPagination();
+      void trackList.offsetHeight;
+      trackList.classList.remove("nav-reveal-instant");
     }
 
     target.querySelector(".play-btn").click();
@@ -1889,32 +1899,43 @@
     void target.offsetWidth; // restart the pulse even on rapid repeated navigation
     target.classList.add("nav-pulse");
     setTimeout(() => target.classList.remove("nav-pulse"), 560);
-    scrollTrackForNavigation(target);
+
+    // Let the player/row state paint first, then measure one settled layout.
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollTrackForNavigation(target)));
   }
 
   function scrollTrackForNavigation(target) {
     const header = document.querySelector("header");
     const player = document.getElementById("player-bar");
-    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
-    const playerTop = player && player.classList.contains("active")
-      ? player.getBoundingClientRect().top
-      : window.innerHeight;
+    const headerRect = header ? header.getBoundingClientRect() : null;
+    const playerRect = player && player.classList.contains("active")
+      ? player.getBoundingClientRect()
+      : null;
     const margin = 16;
-    const usableTop = headerBottom + margin;
-    const usableBottom = playerTop - margin;
+    const usableTop = (headerRect ? headerRect.bottom : 0) + margin;
+    const usableBottom = (playerRect ? playerRect.top : window.innerHeight) - margin;
     const rect = target.getBoundingClientRect();
 
-    // Only move the page when the whole row is not already visible in the usable
-    // viewport. Center it between the sticky header and fixed player so neither
-    // control can cover the selected track on mobile.
-    if (rect.top < usableTop || rect.bottom > usableBottom) {
-      const usableCenter = usableTop + (usableBottom - usableTop) / 2;
-      const rowCenter = rect.top + rect.height / 2;
-      window.scrollBy({
-        top: rowCenter - usableCenter,
-        behavior: "smooth"
-      });
+    // Do nothing when the complete row already fits between the sticky header
+    // and fixed player. Otherwise calculate one absolute, deterministic target.
+    if (rect.top >= usableTop && rect.bottom <= usableBottom) return;
+
+    const usableHeight = Math.max(0, usableBottom - usableTop);
+    const absoluteRowTop = window.scrollY + rect.top;
+    let destination;
+
+    if (rect.height <= usableHeight) {
+      // Center a normal row in the genuinely visible portion of the viewport.
+      destination = absoluteRowTop - usableTop - (usableHeight - rect.height) / 2;
+    } else {
+      // Defensive fallback for an unusually tall row: align its top below header.
+      destination = absoluteRowTop - usableTop;
     }
+
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    destination = Math.max(0, Math.min(maxScroll, destination));
+
+    window.scrollTo({ top: destination, behavior: "smooth" });
   }
 
   function playNext() {
