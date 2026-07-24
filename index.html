@@ -476,17 +476,26 @@
     white-space:nowrap;
   }
   .track-share:hover{ color:var(--accent); }
-  .track.highlight{ background:var(--surface); position:relative; }
-  .track.highlight::after{
-    content:""; position:absolute; inset:0; pointer-events:none;
-    border:1px solid var(--accent);
-    animation:ping 1.8s ease-out 3;
+  .track.highlight{
+    position:relative;
+    animation:sharedArrival 2.6s cubic-bezier(.16,.84,.44,1) both;
   }
-  @keyframes ping{
-    0%{ opacity:0; transform:scale(1); }
-    12%{ opacity:0.85; }
-    60%{ opacity:0.25; }
-    100%{ opacity:0; transform:scale(1.015, 1.25); }
+  .track.highlight::after{
+    content:""; position:absolute; top:0; bottom:0; left:-42%; width:42%;
+    pointer-events:none;
+    background:linear-gradient(90deg, transparent, rgba(255,176,32,0.20), transparent);
+    animation:sharedSweep 1.15s cubic-bezier(.16,.84,.44,1) .12s both;
+  }
+  @keyframes sharedArrival{
+    0%{ background:var(--surface); box-shadow:inset 0 0 0 1px rgba(255,176,32,0); }
+    14%{ background:rgba(255,176,32,0.10); box-shadow:inset 3px 0 0 var(--accent), inset 0 0 0 1px rgba(255,176,32,0.72); }
+    48%{ background:rgba(255,176,32,0.055); box-shadow:inset 3px 0 0 var(--accent), inset 0 0 0 1px rgba(255,176,32,0.34); }
+    100%{ background:transparent; box-shadow:inset 0 0 0 1px rgba(255,176,32,0); }
+  }
+  @keyframes sharedSweep{
+    0%{ transform:translateX(0); opacity:0; }
+    18%{ opacity:1; }
+    100%{ transform:translateX(340%); opacity:0; }
   }
   .player-bar{
     position:fixed; bottom:0; left:0; right:0; z-index:30;
@@ -1174,7 +1183,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v175</span>
+      <span class="mono" style="opacity:0.4;">v176</span>
     </footer>
   </section>
 
@@ -2174,14 +2183,14 @@
     }
   });
 
-  // shared-link: center the beat on screen and ping it so the receiver spots it
+  // shared-link: center the beat on screen and give it a brief arrival highlight
   if (location.hash) {
     const target = document.getElementById(location.hash.slice(1));
     if (target && target.classList.contains("track")) {
       setTimeout(() => {
         target.scrollIntoView({ behavior: "smooth", block: "center" });
         target.classList.add("highlight");
-        setTimeout(() => target.classList.remove("highlight"), 5500);
+        setTimeout(() => target.classList.remove("highlight"), 2800);
       }, 300);
     }
   }
