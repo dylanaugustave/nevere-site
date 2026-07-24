@@ -291,9 +291,29 @@
   .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:44px; gap:24px; flex-wrap:wrap; }
   .filter-bar{ display:flex; align-items:flex-start; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
   .filter-bar-main{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; flex:1; min-width:0; }
-  .filter-tags{ display:flex; gap:8px; flex-wrap:wrap; opacity:1; transform:translateY(0); transition:opacity .18s ease, transform .18s ease; }
-  .filter-tags[hidden]{ display:flex; opacity:0; transform:translateY(-4px); pointer-events:none; position:absolute; visibility:hidden; }
-  .filter-tags.entering{ opacity:0; transform:translateY(-4px); }
+  .filter-tags{
+    display:flex; gap:8px; flex-wrap:wrap;
+    max-height:140px; opacity:1; transform:translateY(0);
+    overflow:hidden;
+    transition:
+      max-height .32s cubic-bezier(.16,.84,.44,1),
+      opacity .22s ease,
+      transform .32s cubic-bezier(.16,.84,.44,1);
+    will-change:max-height, opacity, transform;
+  }
+  .filter-tags[hidden]{
+    display:flex;
+    max-height:0;
+    opacity:0;
+    transform:translateY(-8px);
+    pointer-events:none;
+    visibility:hidden;
+  }
+  .filter-tags.entering{
+    max-height:0;
+    opacity:0;
+    transform:translateY(-8px);
+  }
   .filter-tag{
     background:none; border:1px solid var(--line); color:var(--muted);
     font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em;
@@ -1206,7 +1226,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v183</span>
+      <span class="mono" style="opacity:0.4;">v185</span>
     </footer>
   </section>
 
@@ -1240,11 +1260,7 @@
     </div>
   </div>
 
-  <button class="back-to-filters" id="back-to-filters" type="button" aria-label="Back to catalog filters">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-  filters
-</button>
-
+  
 <div class="player-bar" id="player-bar">
     <div class="pb-left" id="pb-left">
       <button class="pb-skip" id="pb-prev" aria-label="Previous beat" title="Previous beat">
@@ -1372,35 +1388,7 @@
 
   // ---- filter and sort ----
   const filterTagsEl = document.getElementById("filter-tags");
-  const backToFiltersBtn = document.getElementById("back-to-filters");
-  const filterBar = document.querySelector(".filter-bar");
-
-  function updateBackToFilters() {
-    if (!backToFiltersBtn || !filterBar) return;
-    const rect = filterBar.getBoundingClientRect();
-    const catalog = document.getElementById("catalog");
-    const catalogRect = catalog ? catalog.getBoundingClientRect() : null;
-    const header = document.querySelector("header");
-    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
-    const insideCatalog = catalogRect && catalogRect.bottom > headerBottom && catalogRect.top < window.innerHeight;
-    backToFiltersBtn.classList.toggle("visible", insideCatalog && rect.bottom < headerBottom + 12);
-  }
-
-  backToFiltersBtn?.addEventListener("click", () => {
-    const header = document.querySelector("header");
-    const headerHeight = header ? header.getBoundingClientRect().height : 0;
-    const targetTop = window.scrollY + filterBar.getBoundingClientRect().top - headerHeight - 18;
-    window.scrollTo({
-      top: Math.max(0, targetTop),
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
-    });
-  });
-
-  window.addEventListener("scroll", updateBackToFilters, { passive: true });
-  window.addEventListener("resize", updateBackToFilters);
-  updateBackToFilters();
-
-  let activeTag = null;
+let activeTag = null;
 
   const filterToggle = document.getElementById("filter-toggle");
   filterToggle.addEventListener("click", () => {
