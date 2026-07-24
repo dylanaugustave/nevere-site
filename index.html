@@ -393,6 +393,16 @@
   .track:last-child{ border-bottom:1px solid var(--line); }
   .track:hover{ background:var(--surface); transform:translateX(4px); }
   .track:hover::before{ width:3px; }
+  .track.nav-pulse{
+    background:var(--surface);
+    animation:navTrackPulse .52s cubic-bezier(.16,.84,.44,1) both;
+  }
+  .track.nav-pulse::before{ width:3px; }
+  @keyframes navTrackPulse{
+    0%{ transform:translateX(0); }
+    35%{ transform:translateX(4px); }
+    100%{ transform:translateX(0); }
+  }
   .play-btn{
     width:44px; height:44px; border-radius:50%; border:none;
     background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center;
@@ -1183,7 +1193,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v176</span>
+      <span class="mono" style="opacity:0.4;">v177</span>
     </footer>
   </section>
 
@@ -1875,6 +1885,10 @@
     }
 
     target.querySelector(".play-btn").click();
+    target.classList.remove("nav-pulse");
+    void target.offsetWidth; // restart the pulse even on rapid repeated navigation
+    target.classList.add("nav-pulse");
+    setTimeout(() => target.classList.remove("nav-pulse"), 560);
     target.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
