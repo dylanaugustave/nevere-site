@@ -1174,7 +1174,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v173</span>
+      <span class="mono" style="opacity:0.4;">v174</span>
     </footer>
   </section>
 
@@ -1844,7 +1844,8 @@
   }
 
   function playAdjacent(direction) {
-    const rows = [...trackList.querySelectorAll(".track:not(.hidden)")];
+    // Navigate the full filtered catalog, not just the rows currently exposed by pagination.
+    const rows = [...trackList.querySelectorAll(".track:not(.filtered-out)")];
     if (!rows.length) return;
     const currentId = playingId || (lastBeat && lastBeat.id);
     let current = rows.findIndex(r => r.dataset.id === currentId);
@@ -1856,6 +1857,14 @@
       if (audio) { audio.currentTime = 0; audio.play(); }
       return;
     }
+
+    // If the next/previous track sits beyond the current “load more” boundary,
+    // reveal enough catalog rows to include it before starting playback.
+    if (target.classList.contains("hidden")) {
+      visibleLimit = Math.max(visibleLimit, Math.ceil((targetIndex + 1) / PAGE_SIZE) * PAGE_SIZE);
+      applyPagination();
+    }
+
     target.querySelector(".play-btn").click();
     target.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
