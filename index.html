@@ -239,14 +239,6 @@
   @media (prefers-reduced-motion: reduce){
     .ambient-bg{ animation:none; }
   }
-  .cursor-dot{
-    position:fixed; top:0; left:0; z-index:100; width:6px; height:6px;
-    border-radius:50%; background:var(--accent); pointer-events:none;
-    transform:translate(-50%,-50%); opacity:0; transition:opacity .2s ease;
-    will-change:transform;
-  }
-  .cursor-dot.active{ opacity:1; }
-  body.custom-cursor, body.custom-cursor *{ cursor:none !important; }
   .display{ font-family:'Space Grotesk', sans-serif; }
   .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; }
   a{ color:inherit; }
@@ -659,7 +651,6 @@
 </head>
 <body id="top">
 <div class="ambient-bg" aria-hidden="true"></div>
-<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
 
   <header>
     <div class="brand-group">
@@ -1589,21 +1580,6 @@ let activeTag = null;
     mobileNav.classList.remove("open");
     menuBtn.setAttribute("aria-expanded", false);
   }));
-
-  // ---- custom cursor (desktop only, replaces native pointer) ----
-  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    const dot = document.getElementById("cursor-dot");
-    document.body.classList.add("custom-cursor"); // only hides native cursor once this actually mounts
-    let active = false;
-    window.addEventListener("mousemove", (e) => {
-      dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-      if (!active) { dot.classList.add("active"); active = true; }
-    }, { passive: true });
-    document.addEventListener("mouseleave", () => {
-      dot.classList.remove("active");
-      active = false;
-    });
-  }
 
   // ---- hero reveal ----
   requestAnimationFrame(() => {
