@@ -1222,7 +1222,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v193</span>
+      <span class="mono" style="opacity:0.4;">v195</span>
     </footer>
   </section>
 
@@ -1955,12 +1955,15 @@ let activeTag = null;
     playAdjacent(1);
   }
 
+  const PREVIOUS_RESTART_THRESHOLD = 1.5;
+
   function playPrevious() {
     const audio = currentAudio();
 
-    // First press: restart the current beat if it has already moved forward.
-    // Second press (while already at the start): go to the previous beat.
-    if (audio && audio.currentTime > 0.25) {
+    // Familiar music-player behavior:
+    // - past the opening moment: restart the current beat
+    // - already near the start: go to the previous beat
+    if (audio && audio.currentTime > PREVIOUS_RESTART_THRESHOLD) {
       audio.currentTime = 0;
       if (lastBtn) setRing(lastBtn, 0);
       const timeEl = document.getElementById("pb-time");
