@@ -1,6 +1,11 @@
 [build]
   publish = "."
-  command = "echo 'no build step — static site'"
+  command = "printf '{\"commit\":\"%s\",\"build_id\":\"%s\",\"context\":\"%s\",\"deployed_at\":\"%s\"}\\n' \"$COMMIT_REF\" \"$BUILD_ID\" \"$CONTEXT\" \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" > deploy.json"
+
+[[headers]]
+  for = "/deploy.json"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
 
 [[headers]]
   for = "/*.mp3"
