@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon Phase — beat by nevere</title>
+<meta name="description" content="Moon Phase — spacey, melodic beat by nevere. 87 BPM in C maj. Free non-exclusive download.">
+<meta name="theme-color" content="#0d0b0a">
+<link rel="canonical" href="https://neverebeats.com/beats/moon-phase/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="256x256" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<meta property="og:title" content="Moon Phase — prod. nevere">
+<meta property="og:description" content="Moon Phase — spacey, melodic beat by nevere. 87 BPM in C maj. Free non-exclusive download.">
+<meta property="og:type" content="music.song">
+<meta property="og:url" content="https://neverebeats.com/beats/moon-phase/">
+<meta property="og:image" content="https://neverebeats.com/share-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:audio" content="https://neverebeats.com/moon-phase.mp3">
+<meta property="og:audio:type" content="audio/mpeg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MusicRecording", "@id": "https://neverebeats.com/beats/moon-phase/#recording", "name": "Moon Phase", "url": "https://neverebeats.com/beats/moon-phase/", "creator": {"@type": "Person", "@id": "https://neverebeats.com/#person", "name": "Dylan Augustave", "alternateName": "nevere"}, "keywords": ["spacey", "melodic"], "audio": {"@type": "AudioObject", "contentUrl": "https://neverebeats.com/moon-phase.mp3", "encodingFormat": "audio/mpeg"}, "isAccessibleForFree": true}</script>
+<style>
+  :root{
+    --bg:#0d0b0a; --surface:#17140f; --line:#2a2521; --text:#f3efe8;
+    --muted:#8f8579; --accent:#ffb020; --accent2:#1f6f66;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ color-scheme:dark; }
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
+    min-height:100vh; text-transform:lowercase;
+  }
+  .ambient-bg{
+    position:fixed; inset:-100px; z-index:-1; pointer-events:none;
+    background:radial-gradient(ellipse 700px 600px at 20% 20%, rgba(255,176,32,.09), transparent 70%),
+               radial-gradient(ellipse 800px 700px at 80% 70%, rgba(31,111,102,.12), transparent 70%);
+    filter:blur(60px);
+  }
+  .display{ font-family:'Space Grotesk',sans-serif; }
+  .mono{ font-family:'IBM Plex Mono',monospace; letter-spacing:.04em; }
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px clamp(20px,5vw,64px); border-bottom:1px solid var(--line);
+    background:rgba(13,11,10,.88); backdrop-filter:blur(8px);
+  }
+  .brand{ font-size:20px; font-weight:700; text-decoration:none; }
+  .back{ color:var(--muted); font-size:12px; text-decoration:none; }
+  .back:hover{ color:var(--accent); }
+  main{ max-width:1100px; margin:0 auto; padding:clamp(54px,9vw,110px) clamp(20px,5vw,64px) 120px; }
+  .eyebrow{ color:var(--accent); font-size:12px; margin-bottom:18px; }
+  h1{ font-size:clamp(52px,10vw,112px); line-height:.92; margin-bottom:22px; max-width:10ch; }
+  .tags{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .tag{ color:var(--accent2); border:1px solid var(--accent2); padding:3px 9px; border-radius:2px; font-size:11px; }
+  .meta{ color:var(--muted); font-size:12px; margin-bottom:34px; }
+  .player-card{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:28px 0; }
+  audio{ width:100%; display:block; margin-bottom:22px; accent-color:var(--accent); }
+  .actions{ display:flex; flex-wrap:wrap; gap:10px; }
+  .action{ padding:13px 20px; text-decoration:none; font-size:12px; letter-spacing:.07em; border:1px solid var(--line); }
+  .action.primary{ background:var(--accent); color:#1a1305; border-color:var(--accent); font-weight:700; }
+  .action.secondary:hover, .share:hover{ color:var(--accent); border-color:var(--accent); }
+  .share{ background:none; color:var(--muted); cursor:pointer; }
+  .license{ margin-top:58px; display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr); gap:34px; }
+  .license h2{ font-size:30px; }
+  .license-copy{ color:var(--muted); font-size:14px; line-height:1.75; max-width:55ch; }
+  .license-copy a{ color:var(--accent); }
+  footer{ margin-top:90px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; display:flex; justify-content:space-between; gap:15px; flex-wrap:wrap; }
+  @media(max-width:650px){
+    .license{ grid-template-columns:1fr; }
+    h1{ font-size:clamp(48px,17vw,78px); }
+    .actions{ flex-direction:column; }
+    .action, .share{ width:100%; text-align:center; }
+  }
+</style>
+</head>
+<body>
+<div class="ambient-bg" aria-hidden="true"></div>
+<header>
+  <a class="brand display" href="/">nevere</a>
+  <a class="back mono" href="/#beats">← all beats</a>
+</header>
+<main>
+  <p class="eyebrow mono">beat 87 bpm · C maj</p>
+  <h1 class="display">Moon Phase</h1>
+  <div class="tags"><span class="tag mono">spacey</span><span class="tag mono">melodic</span></div>
+  <p class="meta mono">prod. nevere · free non-exclusive lease</p>
+
+  <section class="player-card" aria-label="Moon Phase player and actions">
+    <audio controls preload="metadata" src="/moon-phase.mp3">Your browser does not support audio playback.</audio>
+    <div class="actions">
+      <a class="action primary display" href="/moon-phase.mp3" download="Moon Phase.mp3">download free</a>
+      <a class="action secondary mono" href="/?beat=moon-phase#contact">ask about exclusive</a>
+      <button class="action share mono" id="share-beat" type="button">share</button>
+    </div>
+  </section>
+
+  <section class="license">
+    <h2 class="display">license</h2>
+    <div class="license-copy">
+      <p>free non-exclusive lease. credit required: <strong>prod. nevere</strong>. the beat itself may not be resold or redistributed as-is. ownership of the underlying composition remains with nevere.</p>
+      <p style="margin-top:14px;"><a href="/terms.html">view full terms →</a></p>
+    </div>
+  </section>
+
+  <footer class="mono"><span>© 2026 nevere</span><span>Moon Phase · 87 bpm · C maj</span></footer>
+</main>
+<script>
+  const shareButton = document.getElementById('share-beat');
+  const shareData = {
+    title: "Moon Phase \u2014 prod. nevere",
+    text: "Moon Phase \u2014 prod. nevere",
+    url: "https://neverebeats.com/beats/moon-phase/"
+  };
+  shareButton.addEventListener('click', async () => {
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch (err) { if (err && err.name !== 'AbortError') console.error(err); }
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(shareData.url);
+      const original = shareButton.textContent;
+      shareButton.textContent = 'link copied ✓';
+      setTimeout(() => { shareButton.textContent = original; }, 1500);
+    }
+  });
+</script>
+</body>
+</html>
