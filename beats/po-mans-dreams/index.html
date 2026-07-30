@@ -83,20 +83,35 @@
   .bp-play .icon-play{ opacity:1; margin-left:1px; }
   .bp-play.on .icon-play{ opacity:0; }
   .bp-play.on .icon-pause{ opacity:1; }
-  .bp-progress-wrap{ flex:1; min-width:0; display:flex; align-items:center; height:20px; }
+  .bp-progress-wrap{
+    position:relative; flex:1; min-width:0; display:flex; align-items:center; height:24px;
+  }
+  .bp-track{
+    position:absolute; left:0; right:0; top:50%; height:4px; transform:translateY(-50%);
+    border-radius:2px; background:#463e33; overflow:visible; pointer-events:none;
+  }
+  .bp-progress{
+    position:absolute; left:0; top:0; bottom:0; width:0;
+    border-radius:2px; background:var(--accent);
+  }
+  .bp-playhead{
+    position:absolute; left:0; top:50%; width:3px; height:16px;
+    transform:translate(-50%,-50%); border-radius:1px; background:#fff;
+    box-shadow:0 0 0 1px var(--bg); will-change:left;
+  }
   .bp-scrub{
-    --progress:0%;
-    -webkit-appearance:none; appearance:none; width:100%; height:4px; border:none; border-radius:2px;
-    background:linear-gradient(to right,var(--accent) 0 var(--progress),#463e33 var(--progress) 100%);
-    cursor:pointer; outline:none;
+    position:relative; z-index:2; -webkit-appearance:none; appearance:none;
+    width:100%; height:24px; border:none; background:transparent;
+    cursor:pointer; outline:none; touch-action:none;
   }
+  .bp-scrub::-webkit-slider-runnable-track{ height:24px; background:transparent; }
   .bp-scrub::-webkit-slider-thumb{
-    -webkit-appearance:none; appearance:none; width:3px; height:16px;
-    background:#fff; border-radius:1px; box-shadow:0 0 0 1px var(--bg); cursor:pointer;
+    -webkit-appearance:none; appearance:none; width:18px; height:24px;
+    background:transparent; border:none; cursor:pointer;
   }
+  .bp-scrub::-moz-range-track{ height:24px; background:transparent; border:none; }
   .bp-scrub::-moz-range-thumb{
-    width:3px; height:16px; background:#fff; border:none; border-radius:1px;
-    box-shadow:0 0 0 1px var(--bg); cursor:pointer;
+    width:18px; height:24px; background:transparent; border:none; cursor:pointer;
   }
   .bp-time{
     color:var(--muted); font-size:11px; white-space:nowrap;
@@ -161,6 +176,10 @@
         <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
       </button>
       <div class="bp-progress-wrap">
+        <div class="bp-track" aria-hidden="true">
+          <div class="bp-progress" id="bp-progress"></div>
+          <div class="bp-playhead" id="bp-playhead"></div>
+        </div>
         <input class="bp-scrub" id="bp-scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek position">
       </div>
       <span class="bp-time mono" id="bp-time">0:00 / 0:00</span>
@@ -194,11 +213,14 @@
   const audio = document.getElementById('beat-audio');
   const playButton = document.getElementById('bp-play');
   const scrub = document.getElementById('bp-scrub');
+  const progressFill = document.getElementById('bp-progress');
+  const playhead = document.getElementById('bp-playhead');
   const timeLabel = document.getElementById('bp-time');
   const loopButton = document.getElementById('bp-loop');
   const ringProgress = playButton.querySelector('.ring-progress');
   const RING_CIRCUMFERENCE = 2 * Math.PI * 14.5;
   let scrubbing = false;
+  let progressRaf = null;
 
   function fmtTime(seconds) {
     if (!Number.isFinite(seconds)) return '0:00';
@@ -209,9 +231,32 @@
 
   function setProgress(fraction) {
     const clamped = Math.max(0, Math.min(1, fraction || 0));
+    const percent = `${(clamped * 100).toFixed(3)}%`;
     if (!scrubbing) scrub.value = Math.round(clamped * 1000);
-    scrub.style.setProperty('--progress', `${(clamped * 100).toFixed(2)}%`);
+    progressFill.style.width = percent;
+    playhead.style.left = percent;
     ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - clamped);
+  }
+
+  function stopProgressLoop() {
+    if (progressRaf) cancelAnimationFrame(progressRaf);
+    progressRaf = null;
+  }
+
+  function startProgressLoop() {
+    stopProgressLoop();
+    const draw = () => {
+      if (!scrubbing && audio.duration) {
+        setProgress(audio.currentTime / audio.duration);
+        renderTime();
+      }
+      if (!audio.paused && !audio.ended) {
+        progressRaf = requestAnimationFrame(draw);
+      } else {
+        progressRaf = null;
+      }
+    };
+    progressRaf = requestAnimationFrame(draw);
   }
 
   function renderTime(current = audio.currentTime) {
@@ -222,6 +267,8 @@
     const playing = !audio.paused && !audio.ended;
     playButton.classList.toggle('on', playing);
     playButton.setAttribute('aria-label', playing ? "Pause Po' Man's Dreams" : "Play Po' Man's Dreams");
+    if (playing) startProgressLoop();
+    else stopProgressLoop();
   }
 
   playButton.addEventListener('click', () => {
@@ -255,8 +302,7 @@
   scrub.addEventListener('input', () => {
     scrubbing = true;
     const fraction = Number(scrub.value) / 1000;
-    scrub.style.setProperty('--progress', `${(fraction * 100).toFixed(2)}%`);
-    ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - fraction);
+    setProgress(fraction);
     if (audio.duration) renderTime(fraction * audio.duration);
   });
 
@@ -265,6 +311,7 @@
     scrubbing = false;
     setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
     renderTime();
+    if (!audio.paused && !audio.ended) startProgressLoop();
   });
 
   loopButton.addEventListener('click', () => {
