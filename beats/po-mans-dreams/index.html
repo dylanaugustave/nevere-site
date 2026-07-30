@@ -60,7 +60,52 @@
   .tag{ color:var(--accent2); border:1px solid var(--accent2); padding:3px 9px; border-radius:2px; font-size:11px; }
   .meta{ color:var(--muted); font-size:12px; margin-bottom:34px; }
   .player-card{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:28px 0; }
-  audio{ width:100%; display:block; margin-bottom:22px; accent-color:var(--accent); }
+  audio{ display:none; }
+  .beat-player{
+    display:flex; align-items:center; gap:14px; width:100%;
+    margin-bottom:22px; min-height:40px;
+  }
+  .bp-play{
+    width:36px; height:36px; border-radius:50%; border:none; position:relative;
+    background:transparent; color:var(--accent); display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; cursor:pointer;
+  }
+  .bp-play .ring{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); pointer-events:none; }
+  .bp-play .ring-track{ fill:none; stroke:#463e33; stroke-width:2; }
+  .bp-play .ring-progress{
+    fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round;
+    stroke-dasharray:103.7; stroke-dashoffset:103.7;
+  }
+  .bp-play .icon-play, .bp-play .icon-pause{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    opacity:0; transition:opacity .15s ease; pointer-events:none;
+  }
+  .bp-play .icon-play{ opacity:1; margin-left:1px; }
+  .bp-play.on .icon-play{ opacity:0; }
+  .bp-play.on .icon-pause{ opacity:1; }
+  .bp-progress-wrap{ flex:1; min-width:0; display:flex; align-items:center; height:20px; }
+  .bp-scrub{
+    --progress:0%;
+    -webkit-appearance:none; appearance:none; width:100%; height:4px; border:none; border-radius:2px;
+    background:linear-gradient(to right,var(--accent) 0 var(--progress),#463e33 var(--progress) 100%);
+    cursor:pointer; outline:none;
+  }
+  .bp-scrub::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:3px; height:16px;
+    background:#fff; border-radius:1px; box-shadow:0 0 0 1px var(--bg); cursor:pointer;
+  }
+  .bp-scrub::-moz-range-thumb{
+    width:3px; height:16px; background:#fff; border:none; border-radius:1px;
+    box-shadow:0 0 0 1px var(--bg); cursor:pointer;
+  }
+  .bp-time{ color:var(--muted); font-size:11px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .bp-loop{
+    width:42px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    background:none; border:1px solid var(--line); border-radius:2px; color:var(--muted);
+    cursor:pointer; transition:color .18s ease,border-color .18s ease;
+  }
+  .bp-loop svg{ width:16px; height:16px; display:block; }
+  .bp-loop.on{ color:var(--accent); border-color:var(--accent); }
   .actions{ display:flex; flex-wrap:wrap; gap:10px; }
   .action{ padding:13px 20px; text-decoration:none; font-size:12px; letter-spacing:.07em; border:1px solid var(--line); }
   .action.primary{ background:var(--accent); color:#1a1305; border-color:var(--accent); font-weight:700; }
@@ -74,6 +119,14 @@
   @media(max-width:650px){
     .license{ grid-template-columns:1fr; }
     h1{ font-size:clamp(48px,17vw,78px); }
+    .beat-player{
+      display:grid; grid-template-columns:36px minmax(0,1fr) 42px;
+      gap:8px 10px; align-items:center;
+    }
+    .bp-play{ grid-column:1; grid-row:1; }
+    .bp-progress-wrap{ grid-column:2; grid-row:1; }
+    .bp-loop{ grid-column:3; grid-row:1; }
+    .bp-time{ grid-column:2 / 4; grid-row:2; justify-self:end; }
     .actions{ flex-direction:column; }
     .action, .share{ width:100%; text-align:center; }
   }
@@ -92,7 +145,29 @@
   <p class="meta mono">prod. nevere · free non-exclusive lease</p>
 
   <section class="player-card" aria-label="Po&#x27; Man&#x27;s Dreams player and actions">
-    <audio controls preload="metadata" src="/po-mans-dreams.mp3">Your browser does not support audio playback.</audio>
+    <audio id="beat-audio" preload="metadata" src="/po-mans-dreams.mp3"></audio>
+    <div class="beat-player">
+      <button class="bp-play" id="bp-play" type="button" aria-label="Play Po&#x27; Man&#x27;s Dreams">
+        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+          <circle class="ring-track" cx="18" cy="18" r="16.5"/>
+          <circle class="ring-progress" cx="18" cy="18" r="16.5"/>
+        </svg>
+        <svg class="icon-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+      </button>
+      <div class="bp-progress-wrap">
+        <input class="bp-scrub" id="bp-scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek position">
+      </div>
+      <span class="bp-time mono" id="bp-time">0:00 / 0:00</span>
+      <button class="bp-loop" id="bp-loop" type="button" aria-label="Loop: off" aria-pressed="false" title="Loop: off">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="17 1 21 5 17 9"></polyline>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+          <polyline points="7 23 3 19 7 15"></polyline>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+      </button>
+    </div>
     <div class="actions">
       <a class="action primary display" href="/po-mans-dreams.mp3" download="Po&#x27; Man&#x27;s Dreams.mp3">download free</a>
       <a class="action secondary mono" href="/?beat=po-mans-dreams#contact">ask about exclusive</a>
@@ -111,6 +186,90 @@
   <footer class="mono"><span>© 2026 nevere</span><span>Po&#x27; Man&#x27;s Dreams · 85 bpm · A min</span></footer>
 </main>
 <script>
+  const audio = document.getElementById('beat-audio');
+  const playButton = document.getElementById('bp-play');
+  const scrub = document.getElementById('bp-scrub');
+  const timeLabel = document.getElementById('bp-time');
+  const loopButton = document.getElementById('bp-loop');
+  const ringProgress = playButton.querySelector('.ring-progress');
+  const RING_CIRCUMFERENCE = 2 * Math.PI * 16.5;
+  let scrubbing = false;
+
+  function fmtTime(seconds) {
+    if (!Number.isFinite(seconds)) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${String(secs).padStart(2, '0')}`;
+  }
+
+  function setProgress(fraction) {
+    const clamped = Math.max(0, Math.min(1, fraction || 0));
+    if (!scrubbing) scrub.value = Math.round(clamped * 1000);
+    scrub.style.setProperty('--progress', `${(clamped * 100).toFixed(2)}%`);
+    ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - clamped);
+  }
+
+  function renderTime(current = audio.currentTime) {
+    timeLabel.textContent = `${fmtTime(current)} / ${fmtTime(audio.duration)}`;
+  }
+
+  function syncPlayState() {
+    const playing = !audio.paused && !audio.ended;
+    playButton.classList.toggle('on', playing);
+    playButton.setAttribute('aria-label', playing ? "Pause Po' Man's Dreams" : "Play Po' Man's Dreams");
+  }
+
+  playButton.addEventListener('click', () => {
+    if (audio.paused || audio.ended) {
+      audio.play().catch((err) => console.error('Playback failed:', err));
+    } else {
+      audio.pause();
+    }
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+    renderTime();
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!scrubbing && audio.duration) setProgress(audio.currentTime / audio.duration);
+    if (!scrubbing) renderTime();
+  });
+
+  audio.addEventListener('play', syncPlayState);
+  audio.addEventListener('pause', syncPlayState);
+  audio.addEventListener('ended', () => {
+    syncPlayState();
+    if (!audio.loop) {
+      setProgress(1);
+      renderTime(audio.duration);
+    }
+  });
+
+  scrub.addEventListener('input', () => {
+    scrubbing = true;
+    const fraction = Number(scrub.value) / 1000;
+    scrub.style.setProperty('--progress', `${(fraction * 100).toFixed(2)}%`);
+    ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - fraction);
+    if (audio.duration) renderTime(fraction * audio.duration);
+  });
+
+  scrub.addEventListener('change', () => {
+    if (audio.duration) audio.currentTime = (Number(scrub.value) / 1000) * audio.duration;
+    scrubbing = false;
+    setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+    renderTime();
+  });
+
+  loopButton.addEventListener('click', () => {
+    audio.loop = !audio.loop;
+    loopButton.classList.toggle('on', audio.loop);
+    loopButton.setAttribute('aria-pressed', String(audio.loop));
+    loopButton.setAttribute('aria-label', audio.loop ? 'Loop: on' : 'Loop: off');
+    loopButton.title = audio.loop ? 'Loop: on' : 'Loop: off';
+  });
+
   const shareButton = document.getElementById('share-beat');
   const shareData = {
     title: "Po' Man's Dreams \u2014 prod. nevere",
