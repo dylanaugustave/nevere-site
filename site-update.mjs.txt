@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.dirname(fileURLToPath(import.meta.url));
+
+const homepagePath = path.join(root, "index.html");
+let homepage = fs.readFileSync(homepagePath, "utf8");
+homepage = homepage.replace(">v202<", ">v203<");
+fs.writeFileSync(homepagePath, homepage);
+
+const beatsRoot = path.join(root, "beats");
+for (const entry of fs.readdirSync(beatsRoot, { withFileTypes: true })) {
+  if (!entry.isDirectory()) continue;
+
+  const pagePath = path.join(beatsRoot, entry.name, "index.html");
+  if (!fs.existsSync(pagePath)) continue;
+
+  let page = fs.readFileSync(pagePath, "utf8");
+  page = page.replace(
+    "width:auto; justify-self:start; border:none; padding:7px 0;\n      text-align:left; color:var(--muted);",
+    "width:auto; justify-self:center; border:none; padding:9px 18px;\n      text-align:center; color:var(--muted);",
+  );
+  fs.writeFileSync(pagePath, page);
+}
+
+console.log("Applied v203 site updates.");
