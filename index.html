@@ -457,6 +457,8 @@
   .play-btn.on .icon-pause{ opacity:1; }
   .track-main{ min-width:0; }
   .track-title{ font-size:17px; font-weight:500; margin:0; }
+  .track-title-link{ color:inherit; text-decoration:none; transition:color .18s ease; }
+  .track-title-link:hover{ color:var(--accent); }
   .track-tags{ display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
   .tag{ font-size:11px; text-transform:lowercase; letter-spacing:0.06em; color:var(--accent2); border:1px solid var(--accent2); padding:2px 8px; border-radius:2px; display:inline-block; }
   .track-meta{ display:flex; gap:18px; color:var(--muted); font-size:12px; white-space:nowrap; }
@@ -692,7 +694,7 @@
   <section class="section reveal" id="beats">
     <div class="section-head">
       <h2 class="section-title display">catalog</h2>
-      <span class="section-count mono" id="track-count">20 tracks</span>
+      <span class="section-count mono" id="track-count">24 tracks</span>
     </div>
     <p class="mono" style="color:var(--muted); font-size:12px; margin:-28px 0 28px;">
       free non-exclusive leases. credit required: prod. nevere.
@@ -726,7 +728,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Po' Man's Dreams</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/po-mans-dreams/" aria-label="Open Po&#x27; Man&#x27;s Dreams beat page">Po' Man's Dreams</a></h3>
           <div class="track-tags"><span class="tag">dark</span><span class="tag">angelic</span></div>
           <div class="track-meta-mobile mono">85 bpm · A min</div>
         </div>
@@ -745,7 +747,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Off Air</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/off-air/" aria-label="Open Off Air beat page">Off Air</a></h3>
           <div class="track-tags"><span class="tag">mellow</span><span class="tag">hazy</span><span class="tag">lo-fi</span></div>
           <div class="track-meta-mobile mono">76 bpm · A min</div>
         </div>
@@ -764,7 +766,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Moon Phase</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/moon-phase/" aria-label="Open Moon Phase beat page">Moon Phase</a></h3>
           <div class="track-tags"><span class="tag">spacey</span><span class="tag">melodic</span></div>
           <div class="track-meta-mobile mono">87 bpm · C maj</div>
         </div>
@@ -783,7 +785,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Second Wind</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/second-wind/" aria-label="Open Second Wind beat page">Second Wind</a></h3>
           <div class="track-tags"><span class="tag">raw</span><span class="tag">sample-based</span></div>
           <div class="track-meta-mobile mono">88 bpm · A min</div>
         </div>
@@ -802,7 +804,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Motion Carried</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/motion-carried/" aria-label="Open Motion Carried beat page">Motion Carried</a></h3>
           <div class="track-tags"><span class="tag">anthem</span><span class="tag">triumphant</span></div>
           <div class="track-meta-mobile mono">130 bpm · D maj</div>
         </div>
@@ -821,7 +823,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Left Field</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/left-field/" aria-label="Open Left Field beat page">Left Field</a></h3>
           <div class="track-tags"><span class="tag">experimental</span><span class="tag">off-kilter</span></div>
           <div class="track-meta-mobile mono">89 bpm · Bb min</div>
         </div>
@@ -840,7 +842,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Channel Crossing</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/channel-crossing/" aria-label="Open Channel Crossing beat page">Channel Crossing</a></h3>
           <div class="track-tags"><span class="tag">atmospheric</span><span class="tag">steady</span></div>
           <div class="track-meta-mobile mono">120 bpm · A maj</div>
         </div>
@@ -859,7 +861,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Detour</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/detour/" aria-label="Open Detour beat page">Detour</a></h3>
           <div class="track-tags"><span class="tag">experimental</span><span class="tag">shifting structure</span></div>
           <div class="track-meta-mobile mono">98 bpm · C maj</div>
         </div>
@@ -878,7 +880,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Ripe</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/ripe/" aria-label="Open Ripe beat page">Ripe</a></h3>
           <div class="track-tags"><span class="tag">afrobeat</span><span class="tag">tropical</span></div>
           <div class="track-meta-mobile mono">90 bpm · Eb min</div>
         </div>
@@ -897,7 +899,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Airtime</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/airtime/" aria-label="Open Airtime beat page">Airtime</a></h3>
           <div class="track-tags"><span class="tag">polished</span><span class="tag">melodic</span></div>
           <div class="track-meta-mobile mono">115 bpm · D maj</div>
         </div>
@@ -916,7 +918,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Prom Night</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/prom-night/" aria-label="Open Prom Night beat page">Prom Night</a></h3>
           <div class="track-tags"><span class="tag">woozy</span><span class="tag">dreamlike</span><span class="tag">faded</span></div>
           <div class="track-meta-mobile mono">83 bpm · B maj</div>
         </div>
@@ -935,7 +937,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Long Way Up</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/long-way-up/" aria-label="Open Long Way Up beat page">Long Way Up</a></h3>
           <div class="track-tags"><span class="tag">spiritual</span><span class="tag">intimate</span><span class="tag">slow burner</span></div>
           <div class="track-meta-mobile mono">82 bpm · F min</div>
         </div>
@@ -954,7 +956,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Red</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/red-beat/" aria-label="Open Red beat page">Red</a></h3>
           <div class="track-tags"><span class="tag">hard-hitting</span><span class="tag">bright</span><span class="tag">trap</span></div>
           <div class="track-meta-mobile mono">124 bpm · Ab maj</div>
         </div>
@@ -973,7 +975,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">ET</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/et/" aria-label="Open ET beat page">ET</a></h3>
           <div class="track-tags"><span class="tag">atmospheric</span><span class="tag">chill</span></div>
           <div class="track-meta-mobile mono">88 bpm · A min</div>
         </div>
@@ -992,7 +994,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">nyc</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/nyc/" aria-label="Open nyc beat page">nyc</a></h3>
           <div class="track-tags"><span class="tag">chill</span><span class="tag">atmospheric</span><span class="tag">melodic</span></div>
           <div class="track-meta-mobile mono">120 bpm · G min</div>
         </div>
@@ -1011,7 +1013,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">2023</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/2023/" aria-label="Open 2023 beat page">2023</a></h3>
           <div class="track-tags"><span class="tag">nostalgic</span><span class="tag">crisp</span><span class="tag">new-age boom-bap</span></div>
           <div class="track-meta-mobile mono">103 bpm · B min</div>
         </div>
@@ -1030,7 +1032,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Free Bird</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/free-bird/" aria-label="Open Free Bird beat page">Free Bird</a></h3>
           <div class="track-tags"><span class="tag">house</span><span class="tag">experimental</span><span class="tag">tempo shift</span></div>
           <div class="track-meta-mobile mono">80 bpm · E maj</div>
         </div>
@@ -1049,7 +1051,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Oh</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/oh/" aria-label="Open Oh beat page">Oh</a></h3>
           <div class="track-tags"><span class="tag">808-heavy</span><span class="tag">sample-based</span><span class="tag">whimsical</span></div>
           <div class="track-meta-mobile mono">100 bpm · G maj</div>
         </div>
@@ -1068,7 +1070,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Raj</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/raj/" aria-label="Open Raj beat page">Raj</a></h3>
           <div class="track-tags"><span class="tag">trap</span><span class="tag">melancholic</span></div>
           <div class="track-meta-mobile mono">87 bpm · G maj</div>
         </div>
@@ -1087,7 +1089,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Peripheral</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/peripheral/" aria-label="Open Peripheral beat page">Peripheral</a></h3>
           <div class="track-tags"><span class="tag">lofi</span><span class="tag">slow wind-down</span></div>
           <div class="track-meta-mobile mono">95 bpm · D min</div>
         </div>
@@ -1106,7 +1108,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Sylvan</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/sylvan/" aria-label="Open Sylvan beat page">Sylvan</a></h3>
           <div class="track-tags"><span class="tag">flute loop</span><span class="tag">unconventional drums</span></div>
           <div class="track-meta-mobile mono">87 bpm · B maj</div>
         </div>
@@ -1125,7 +1127,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Coconut Radio</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/coconut-radio/" aria-label="Open Coconut Radio beat page">Coconut Radio</a></h3>
           <div class="track-tags"><span class="tag">tropical</span><span class="tag">trap</span><span class="tag">hard-hitting</span></div>
           <div class="track-meta-mobile mono">116 bpm · C maj</div>
         </div>
@@ -1144,7 +1146,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Monsoon</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/monsoon/" aria-label="Open Monsoon beat page">Monsoon</a></h3>
           <div class="track-tags"><span class="tag">tropical</span><span class="tag">trap</span></div>
           <div class="track-meta-mobile mono">98 bpm · B min</div>
         </div>
@@ -1163,7 +1165,7 @@
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
         </button>
         <div class="track-main">
-          <h3 class="track-title">Ceiling Fan</h3>
+          <h3 class="track-title"><a class="track-title-link" href="/beats/ceiling-fan/" aria-label="Open Ceiling Fan beat page">Ceiling Fan</a></h3>
           <div class="track-tags"><span class="tag">chill</span><span class="tag">melodic</span></div>
           <div class="track-meta-mobile mono">150 bpm · G min</div>
         </div>
@@ -1216,7 +1218,9 @@
     </div>
 
     <form class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <p class="mono" id="contact-beat-label" style="color:var(--accent); font-size:12px;" hidden></p>
       <input type="hidden" name="form-name" value="contact">
+      <input type="hidden" name="beat" id="contact-beat">
       <p class="hidden-field"><label>Don't fill this out: <input name="bot-field"></label></p>
       <div class="form-row">
         <input type="text" name="name" placeholder="your name" required>
@@ -2231,7 +2235,7 @@ let activeTag = null;
     if (shareBtn) {
       const row = shareBtn.closest(".track");
       const beat = row ? BEATS.find(b => b.id === row.dataset.id) : null;
-      const url = `https://neverebeats.com/#${shareBtn.dataset.share}`;
+      const url = `https://neverebeats.com/beats/${shareBtn.dataset.share}/`;
       const shareData = {
         title: beat ? `${beat.title} — prod. nevere` : "nevere",
         text: beat ? `${beat.title} — prod. nevere` : "beat by nevere",
@@ -2292,6 +2296,24 @@ let activeTag = null;
       document.body.style.overflow = "";
     }
   });
+
+
+  // beat-aware inquiry: /?beat=moon-phase#contact preselects the beat in the Netlify form
+  const contactParams = new URLSearchParams(window.location.search);
+  const inquiryBeatSlug = contactParams.get("beat");
+  if (inquiryBeatSlug) {
+    const inquiryBeat = BEATS.find(b => {
+      const row = document.querySelector(`.track[data-id="${b.id}"]`);
+      return row && row.id === inquiryBeatSlug;
+    });
+    const beatInput = document.getElementById("contact-beat");
+    const beatLabel = document.getElementById("contact-beat-label");
+    if (beatInput) beatInput.value = inquiryBeat ? inquiryBeat.title : inquiryBeatSlug;
+    if (beatLabel) {
+      beatLabel.textContent = `inquiring about: ${inquiryBeat ? inquiryBeat.title : inquiryBeatSlug.replaceAll("-", " ")}`;
+      beatLabel.hidden = false;
+    }
+  }
 
   // shared-link: center the beat on screen and give it a brief arrival highlight
   if (location.hash) {
