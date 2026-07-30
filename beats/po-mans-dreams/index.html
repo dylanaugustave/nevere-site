@@ -59,14 +59,14 @@
   .tags{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
   .tag{ color:var(--accent2); border:1px solid var(--accent2); padding:3px 9px; border-radius:2px; font-size:11px; }
   .meta{ color:var(--muted); font-size:12px; margin-bottom:34px; }
-  .player-card{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:28px 0; }
+  .player-card{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:24px 0; }
   audio{ display:none; }
   .beat-player{
-    display:flex; align-items:center; gap:14px; width:100%;
-    margin-bottom:22px; min-height:40px;
+    display:flex; align-items:center; gap:10px; width:100%;
+    margin-bottom:18px; min-height:36px;
   }
   .bp-play{
-    width:36px; height:36px; border-radius:50%; border:none; position:relative;
+    width:32px; height:32px; border-radius:50%; border:none; position:relative;
     background:transparent; color:var(--accent); display:flex; align-items:center; justify-content:center;
     flex-shrink:0; cursor:pointer;
   }
@@ -74,7 +74,7 @@
   .bp-play .ring-track{ fill:none; stroke:#463e33; stroke-width:2; }
   .bp-play .ring-progress{
     fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round;
-    stroke-dasharray:103.7; stroke-dashoffset:103.7;
+    stroke-dasharray:91.1; stroke-dashoffset:91.1;
   }
   .bp-play .icon-play, .bp-play .icon-pause{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -98,37 +98,42 @@
     width:3px; height:16px; background:#fff; border:none; border-radius:1px;
     box-shadow:0 0 0 1px var(--bg); cursor:pointer;
   }
-  .bp-time{ color:var(--muted); font-size:11px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .bp-time{
+    color:var(--muted); font-size:11px; white-space:nowrap;
+    font-variant-numeric:tabular-nums; min-width:72px; text-align:right;
+  }
   .bp-loop{
-    width:42px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    width:36px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
     background:none; border:1px solid var(--line); border-radius:2px; color:var(--muted);
     cursor:pointer; transition:color .18s ease,border-color .18s ease;
   }
   .bp-loop svg{ width:16px; height:16px; display:block; }
   .bp-loop.on{ color:var(--accent); border-color:var(--accent); }
-  .actions{ display:flex; flex-wrap:wrap; gap:10px; }
-  .action{ padding:13px 20px; text-decoration:none; font-size:12px; letter-spacing:.07em; border:1px solid var(--line); }
+  .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+  .action{ padding:12px 18px; text-decoration:none; font-size:12px; letter-spacing:.07em; border:1px solid var(--line); }
   .action.primary{ background:var(--accent); color:#1a1305; border-color:var(--accent); font-weight:700; }
   .action.secondary:hover, .share:hover{ color:var(--accent); border-color:var(--accent); }
   .share{ background:none; color:var(--muted); cursor:pointer; }
-  .license{ margin-top:58px; display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr); gap:34px; }
+  .license{ margin-top:44px; display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr); gap:34px; }
   .license h2{ font-size:30px; }
   .license-copy{ color:var(--muted); font-size:14px; line-height:1.75; max-width:55ch; }
   .license-copy a{ color:var(--accent); }
   footer{ margin-top:90px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; display:flex; justify-content:space-between; gap:15px; flex-wrap:wrap; }
   @media(max-width:650px){
-    .license{ grid-template-columns:1fr; }
+    main{ padding-top:54px; padding-bottom:88px; }
+    .license{ grid-template-columns:1fr; margin-top:38px; }
     h1{ font-size:clamp(48px,17vw,78px); }
-    .beat-player{
-      display:grid; grid-template-columns:36px minmax(0,1fr) 42px;
-      gap:8px 10px; align-items:center;
+    .beat-player{ gap:8px; }
+    .bp-play{ width:30px; height:30px; }
+    .bp-time{ min-width:66px; font-size:10px; }
+    .bp-loop{ width:34px; height:28px; }
+    .actions{ display:grid; gap:10px; }
+    .action{ width:100%; text-align:center; padding:11px 16px; }
+    .share{
+      width:auto; justify-self:start; border:none; padding:7px 0;
+      text-align:left; color:var(--muted);
     }
-    .bp-play{ grid-column:1; grid-row:1; }
-    .bp-progress-wrap{ grid-column:2; grid-row:1; }
-    .bp-loop{ grid-column:3; grid-row:1; }
-    .bp-time{ grid-column:2 / 4; grid-row:2; justify-self:end; }
-    .actions{ flex-direction:column; }
-    .action, .share{ width:100%; text-align:center; }
+    footer{ margin-top:68px; }
   }
 </style>
 </head>
@@ -148,9 +153,9 @@
     <audio id="beat-audio" preload="metadata" src="/po-mans-dreams.mp3"></audio>
     <div class="beat-player">
       <button class="bp-play" id="bp-play" type="button" aria-label="Play Po&#x27; Man&#x27;s Dreams">
-        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
-          <circle class="ring-track" cx="18" cy="18" r="16.5"/>
-          <circle class="ring-progress" cx="18" cy="18" r="16.5"/>
+        <svg class="ring" viewBox="0 0 32 32" aria-hidden="true">
+          <circle class="ring-track" cx="16" cy="16" r="14.5"/>
+          <circle class="ring-progress" cx="16" cy="16" r="14.5"/>
         </svg>
         <svg class="icon-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
         <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
@@ -192,7 +197,7 @@
   const timeLabel = document.getElementById('bp-time');
   const loopButton = document.getElementById('bp-loop');
   const ringProgress = playButton.querySelector('.ring-progress');
-  const RING_CIRCUMFERENCE = 2 * Math.PI * 16.5;
+  const RING_CIRCUMFERENCE = 2 * Math.PI * 14.5;
   let scrubbing = false;
 
   function fmtTime(seconds) {
