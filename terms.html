@@ -6,12 +6,13 @@
 <title>free lease terms — nevere</title>
 <meta name="description" content="Free non-exclusive lease terms for beats by nevere.">
 <meta name="theme-color" content="#0d0b0a">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="icon" type="image/png" sizes="256x256" href="favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="256x256" href="/favicon.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap');
   :root{
     --bg:#0d0b0a; --line:#2a2521; --text:#f3efe8; --muted:#8f8579; --accent:#ffb020;
+    color-scheme:dark;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   body{
@@ -39,7 +40,7 @@
 </head>
 <body>
 <main>
-  <a class="back mono" href="index.html">← back to neverebeats.com</a>
+  <a class="back mono" id="terms-back" href="/">← back to neverebeats.com</a>
   <div class="rule"></div>
   <h1 class="display">free lease terms</h1>
   <p class="sub mono">non-exclusive license · neverebeats.com</p>
@@ -63,11 +64,21 @@
   <p>violation of these conditions ends the license. continued use after termination is unauthorized.</p>
 
   <h2>contact</h2>
-  <p><a href="mailto:neverebeats@gmail.com">neverebeats@gmail.com</a> · <a href="index.html">neverebeats.com</a></p>
+  <p><a href="mailto:neverebeats@gmail.com">neverebeats@gmail.com</a> · <a href="/">neverebeats.com</a></p>
 
-  <a class="dl" href="free-lease.pdf" download>download as pdf</a>
+  <a class="dl" href="/free-lease.pdf" download>download as pdf</a>
 
   <footer class="mono">© 2026 nevere. this document is a plain-language license summary, not legal advice.</footer>
 </main>
+<script>
+  const backLink = document.getElementById('terms-back');
+  const requestedReturn = new URLSearchParams(window.location.search).get('return');
+  const safeBeatPath = /^\/beats\/[a-z0-9-]+\/$/;
+
+  if (requestedReturn && safeBeatPath.test(requestedReturn)) {
+    backLink.href = requestedReturn;
+    backLink.textContent = '← back to beat';
+  }
+</script>
 </body>
 </html>
