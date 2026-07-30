@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "node site-source.mjs && node site-update.mjs"
+  command = "node site-source.mjs"
 
 [[headers]]
   for = "/deploy.json"
