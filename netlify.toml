@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "npm run build:beats && printf '{\"commit\":\"%s\",\"build_id\":\"%s\",\"context\":\"%s\",\"deployed_at\":\"%s\"}\\n' \"$COMMIT_REF\" \"$BUILD_ID\" \"$CONTEXT\" \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" > deploy.json"
+  command = "node site-source.mjs"
 
 [[headers]]
   for = "/deploy.json"
