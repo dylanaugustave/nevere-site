@@ -434,6 +434,8 @@ let activeTag = null;
   // pauseAll: halts playback but keeps position (real tracks resume later).
   // Ring freezes in place for the paused track; other rings reset.
   function pauseAll() {
+    finishScrub();
+    finishRegionDrag();
     if (activeStop) activeStop();
     activeStop = null;
     playingId = null;
@@ -649,22 +651,7 @@ let activeTag = null;
     playAdjacent(1);
   }
 
-  const PREVIOUS_RESTART_THRESHOLD = 1.5;
-
   function playPrevious() {
-    const audio = currentAudio();
-
-    // Familiar music-player behavior:
-    // - past the opening moment: restart the current beat
-    // - already near the start: go to the previous beat
-    if (audio && audio.currentTime > PREVIOUS_RESTART_THRESHOLD) {
-      audio.currentTime = 0;
-      if (lastBtn) setRing(lastBtn, 0);
-      const timeEl = document.getElementById("pb-time");
-      if (timeEl) timeEl.textContent = "0:00 / " + fmtTime(audio.duration);
-      return;
-    }
-
     playAdjacent(-1);
   }
 
@@ -720,6 +707,25 @@ let activeTag = null;
     dragTimeHideTimer = setTimeout(hideDragTime, 700);
   }
 
+  let activeRegionDrag = null;
+
+  function finishRegionDrag(event) {
+    const drag = activeRegionDrag;
+    if (!drag) return;
+    if (event && "pointerId" in event && event.pointerId !== drag.pointerId) return;
+
+    activeRegionDrag = null;
+    window.removeEventListener("pointermove", drag.move);
+    window.removeEventListener("pointerup", drag.finish);
+    window.removeEventListener("pointercancel", drag.finish);
+    window.removeEventListener("blur", drag.finish);
+    drag.handle.removeEventListener("lostpointercapture", drag.finish);
+    if (drag.handle.hasPointerCapture(drag.pointerId)) {
+      drag.handle.releasePointerCapture(drag.pointerId);
+    }
+    hideDragTime();
+  }
+
   function dragHandle(handle, isStart) {
     function onMove(startFrac, startClientX, clientX) {
       const rect = pbRegionOverlay.getBoundingClientRect();
@@ -734,17 +740,31 @@ let activeTag = null;
       showDragTime(isStart ? regionStart : regionEnd);
     }
     handle.addEventListener("pointerdown", (e) => {
+      finishRegionDrag();
       handle.setPointerCapture(e.pointerId);
       const startFrac = isStart ? regionStart : regionEnd;
       const startClientX = e.clientX;
-      const move = (ev) => onMove(startFrac, startClientX, ev.clientX);
-      const up = () => {
-        window.removeEventListener("pointermove", move);
-        window.removeEventListener("pointerup", up);
-        hideDragTime();
+      const drag = {
+        handle,
+        pointerId: e.pointerId,
+        move: null,
+        finish: null,
       };
-      window.addEventListener("pointermove", move);
-      window.addEventListener("pointerup", up);
+      drag.move = (event) => {
+        if (activeRegionDrag !== drag || event.pointerId !== drag.pointerId) return;
+        if (event.pointerType === "mouse" && event.buttons === 0) {
+          finishRegionDrag(event);
+          return;
+        }
+        onMove(startFrac, startClientX, event.clientX);
+      };
+      drag.finish = (event) => finishRegionDrag(event);
+      activeRegionDrag = drag;
+      window.addEventListener("pointermove", drag.move);
+      window.addEventListener("pointerup", drag.finish);
+      window.addEventListener("pointercancel", drag.finish);
+      window.addEventListener("blur", drag.finish);
+      handle.addEventListener("lostpointercapture", drag.finish);
     });
     handle.addEventListener("keydown", (e) => {
       const audio = currentAudio();
@@ -774,6 +794,7 @@ let activeTag = null;
   renderRegion();
 
   function applyLoopMode() {
+    finishRegionDrag();
     pbLoop.dataset.mode = loopMode;
     playerBar.dataset.loopMode = loopMode;
     pbLoop.title = loopMode === "off" ? "Loop: off" : loopMode === "full" ? "Loop: full track" : "Loop: section";
@@ -797,27 +818,71 @@ let activeTag = null;
   });
 
   const SCRUB_SENSITIVITY = 0.35; // matches loop-handle sensitivity for consistent feel
+  let activeScrub = null;
+
+  function commitScrubPosition(audio) {
+    if (!audio || !audio.duration || !isFinite(audio.duration)) return;
+    audio.currentTime = (pbScrub.value / 1000) * audio.duration;
+  }
+
+  function finishScrub(event) {
+    const drag = activeScrub;
+    if (drag && event && "pointerId" in event && event.pointerId !== drag.pointerId) return;
+
+    if (drag) {
+      activeScrub = null;
+      window.removeEventListener("pointermove", drag.move);
+      window.removeEventListener("pointerup", drag.finish);
+      window.removeEventListener("pointercancel", drag.finish);
+      window.removeEventListener("blur", drag.finish);
+      pbScrub.removeEventListener("lostpointercapture", drag.finish);
+      if (pbScrub.hasPointerCapture(drag.pointerId)) {
+        pbScrub.releasePointerCapture(drag.pointerId);
+      }
+    }
+
+    scrubbing = false;
+    if (event && event.type === "change") {
+      commitScrubPosition(drag ? drag.audio : currentAudio());
+    }
+    if (drag && (!event || event.type !== "change")) {
+      pbScrub.dispatchEvent(new Event("change"));
+    }
+  }
+
   pbScrub.addEventListener("pointerdown", (e) => {
     e.preventDefault();
+    finishScrub();
     pbScrub.setPointerCapture(e.pointerId);
     const rect = pbScrub.getBoundingClientRect();
     const startFrac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    pbScrub.value = Math.round(startFrac * 1000);
-    pbScrub.dispatchEvent(new Event("input"));
     const startClientX = e.clientX;
-    function move(ev) {
-      const deltaFrac = ((ev.clientX - startClientX) / rect.width) * SCRUB_SENSITIVITY;
+    const drag = {
+      audio: currentAudio(),
+      pointerId: e.pointerId,
+      move: null,
+      finish: null,
+    };
+    drag.move = (event) => {
+      if (activeScrub !== drag || event.pointerId !== drag.pointerId) return;
+      if (event.pointerType === "mouse" && event.buttons === 0) {
+        finishScrub(event);
+        return;
+      }
+      const deltaFrac = ((event.clientX - startClientX) / rect.width) * SCRUB_SENSITIVITY;
       const frac = Math.min(1, Math.max(0, startFrac + deltaFrac));
       pbScrub.value = Math.round(frac * 1000);
       pbScrub.dispatchEvent(new Event("input"));
-    }
-    function up() {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-      pbScrub.dispatchEvent(new Event("change"));
-    }
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
+    };
+    drag.finish = (event) => finishScrub(event);
+    activeScrub = drag;
+    window.addEventListener("pointermove", drag.move);
+    window.addEventListener("pointerup", drag.finish);
+    window.addEventListener("pointercancel", drag.finish);
+    window.addEventListener("blur", drag.finish);
+    pbScrub.addEventListener("lostpointercapture", drag.finish);
+    pbScrub.value = Math.round(startFrac * 1000);
+    pbScrub.dispatchEvent(new Event("input"));
   });
   pbScrub.addEventListener("input", () => {
     scrubbing = true;
@@ -830,15 +895,7 @@ let activeTag = null;
       }
     }
   });
-  pbScrub.addEventListener("change", () => {
-    if (lastBeat && audioCache[lastBeat.id]) {
-      const audio = audioCache[lastBeat.id];
-      if (audio.duration && isFinite(audio.duration)) {
-        audio.currentTime = (pbScrub.value / 1000) * audio.duration;
-      }
-    }
-    scrubbing = false;
-  });
+  pbScrub.addEventListener("change", finishScrub);
 
   pbPrev.addEventListener("click", playPrevious);
   pbNext.addEventListener("click", playNext);
