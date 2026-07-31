@@ -1222,7 +1222,7 @@
     </form>
     <footer>
       <span>© 2026 nevere</span>
-      <span class="mono" style="opacity:0.4;">v202</span>
+      <span class="mono" style="opacity:0.4;">v204</span>
     </footer>
   </section>
 
@@ -2317,6 +2317,37 @@ let activeTag = null;
       }, 300);
     }
   }
+
+  // Preserve the currently playing beat when its title opens the matching beat page.
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest(".track-title-link");
+    if (!link) return;
+
+    const row = link.closest(".track");
+    const beatId = row && row.dataset.id;
+    const audio = beatId ? audioCache[beatId] : null;
+    const beat = BEATS.find(item => item.id === beatId);
+    if (!audio || !beat || audio.currentTime <= 0) {
+      sessionStorage.removeItem("neverePlaybackTransfer");
+      return;
+    }
+
+    const destinationSlug = link.getAttribute("href").split("/").filter(Boolean).pop();
+    const sourceSlug = beat.audioSrc.replace(/\.mp3$/i, "");
+    if (destinationSlug !== sourceSlug) {
+      sessionStorage.removeItem("neverePlaybackTransfer");
+      return;
+    }
+
+    sessionStorage.setItem("neverePlaybackTransfer", JSON.stringify({
+      slug: destinationSlug,
+      currentTime: audio.currentTime,
+      wasPlaying: !audio.paused && !audio.ended,
+      volume: audio.volume,
+      savedAt: Date.now()
+    }));
+  }, true);
+
 </script>
 
 </body>
