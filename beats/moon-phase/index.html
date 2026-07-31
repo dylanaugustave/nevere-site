@@ -6,6 +6,7 @@
 <title>Moon Phase — beat by nevere</title>
 <meta name="description" content="Moon Phase — spacey, melodic beat by nevere. 87 BPM in C maj. Free non-exclusive download.">
 <meta name="theme-color" content="#0d0b0a">
+<meta name="color-scheme" content="dark">
 <link rel="canonical" href="https://neverebeats.com/beats/moon-phase/">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png">
@@ -30,7 +31,7 @@
     --muted:#8f8579; --accent:#ffb020; --accent2:#1f6f66;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
-  html{ color-scheme:dark; }
+  :root{ color-scheme:dark; }
   body{
     background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
     min-height:100vh; text-transform:lowercase;
@@ -59,24 +60,119 @@
   .tags{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
   .tag{ color:var(--accent2); border:1px solid var(--accent2); padding:3px 9px; border-radius:2px; font-size:11px; }
   .meta{ color:var(--muted); font-size:12px; margin-bottom:34px; }
-  .player-card{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:28px 0; }
-  audio{ width:100%; display:block; margin-bottom:22px; accent-color:var(--accent); }
-  .actions{ display:flex; flex-wrap:wrap; gap:10px; }
-  .action{ padding:13px 20px; text-decoration:none; font-size:12px; letter-spacing:.07em; border:1px solid var(--line); }
+  .player-card{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:24px 0; }
+  audio{ display:none; }
+  .beat-player{
+    display:flex; align-items:center; gap:10px; width:100%;
+    margin-bottom:18px; min-height:36px;
+  }
+  .bp-play{
+    width:32px; height:32px; border-radius:50%; border:none; position:relative;
+    background:transparent; color:var(--accent); display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; cursor:pointer;
+  }
+  .bp-play .ring{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); pointer-events:none; }
+  .bp-play .ring-track{ fill:none; stroke:#463e33; stroke-width:2; }
+  .bp-play .ring-progress{
+    fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round;
+    stroke-dasharray:91.1; stroke-dashoffset:91.1;
+  }
+  .bp-play .icon-play, .bp-play .icon-pause{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    opacity:0; transition:opacity .15s ease; pointer-events:none;
+  }
+  .bp-play .icon-play{ opacity:1; margin-left:1px; }
+  .bp-play.on .icon-play{ opacity:0; }
+  .bp-play.on .icon-pause{ opacity:1; }
+  .bp-progress-wrap{
+    position:relative; flex:1; min-width:0; display:flex; align-items:center; height:24px;
+  }
+  .bp-track{
+    position:absolute; z-index:1; left:0; right:0; top:50%; height:4px;
+    transform:translateY(-50%); border-radius:2px; background:#463e33;
+    overflow:visible; pointer-events:none;
+  }
+  .bp-progress{
+    position:absolute; left:0; top:0; bottom:0; width:0;
+    border-radius:2px; background:var(--accent);
+  }
+  .bp-playhead{
+    position:absolute; z-index:3; left:0; top:50%; width:6px; height:20px;
+    transform:translate(-50%,-50%); border-radius:2px;
+    background:#ffb020; border:2px solid #f3efe8;
+    box-shadow:0 0 0 1px #0d0b0a, 0 0 9px rgba(255,176,32,.45);
+    color-scheme:dark; forced-color-adjust:none; -webkit-print-color-adjust:exact;
+    will-change:left;
+  }
+  @media (prefers-color-scheme: light), (prefers-color-scheme: dark){
+    .bp-playhead{
+      background:#ffb020 !important;
+      border-color:#f3efe8 !important;
+      box-shadow:0 0 0 1px #0d0b0a, 0 0 9px rgba(255,176,32,.45) !important;
+    }
+  }
+  .bp-scrub{
+    position:absolute; z-index:4; inset:0; width:100%; height:24px;
+    cursor:pointer; outline:none; touch-action:none; user-select:none;
+    -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .bp-scrub:focus-visible{
+    outline:2px solid var(--accent); outline-offset:4px; border-radius:2px;
+  }
+  .bp-time{
+    color:var(--muted); font-size:11px; white-space:nowrap;
+    font-variant-numeric:tabular-nums; min-width:72px; text-align:right;
+  }
+  .bp-loop{
+    width:36px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    background:none; border:1px solid var(--line); border-radius:2px; color:var(--muted);
+    cursor:pointer; transition:color .18s ease,border-color .18s ease;
+  }
+  .bp-loop svg{ width:16px; height:16px; display:block; }
+  .bp-loop.on{ color:var(--accent); border-color:var(--accent); }
+  .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+  .action{ padding:12px 18px; text-decoration:none; font-size:12px; letter-spacing:.07em; border:1px solid var(--line); }
   .action.primary{ background:var(--accent); color:#1a1305; border-color:var(--accent); font-weight:700; }
   .action.secondary:hover, .share:hover{ color:var(--accent); border-color:var(--accent); }
   .share{ background:none; color:var(--muted); cursor:pointer; }
-  .license{ margin-top:58px; display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr); gap:34px; }
+  .license{ margin-top:44px; display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr); gap:34px; }
   .license h2{ font-size:30px; }
   .license-copy{ color:var(--muted); font-size:14px; line-height:1.75; max-width:55ch; }
   .license-copy a{ color:var(--accent); }
   footer{ margin-top:90px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; display:flex; justify-content:space-between; gap:15px; flex-wrap:wrap; }
   @media(max-width:650px){
-    .license{ grid-template-columns:1fr; }
+    main{ padding-top:54px; padding-bottom:88px; }
+    .license{ grid-template-columns:1fr; margin-top:38px; }
     h1{ font-size:clamp(48px,17vw,78px); }
-    .actions{ flex-direction:column; }
-    .action, .share{ width:100%; text-align:center; }
+    .beat-player{ gap:8px; }
+    .bp-play{ width:30px; height:30px; }
+    .bp-time{ min-width:66px; font-size:10px; }
+    .bp-loop{ width:34px; height:28px; }
+    .actions{ display:grid; gap:10px; }
+    .action{ width:100%; text-align:center; padding:11px 16px; }
+    .share{
+      width:auto; justify-self:center; border:none; padding:9px 18px;
+      text-align:center; color:var(--muted);
+    }
+    footer{ margin-top:68px; }
   }
+
+  .resume-transfer{
+    display:none; align-items:center; justify-content:space-between; gap:14px;
+    margin:0 0 16px; padding:12px 14px; border:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.04em;
+    color:var(--muted); background:rgba(255,255,255,.025);
+  }
+  .resume-transfer.show{display:flex}
+  .resume-transfer button{
+    appearance:none; border:0; padding:8px 12px; cursor:pointer;
+    background:var(--accent); color:#0d0b0a; font:inherit; font-weight:700;
+  }
+  @media(max-width:640px){
+    .resume-transfer{align-items:stretch; flex-direction:column}
+    .resume-transfer button{width:100%}
+  }
+
 </style>
 </head>
 <body>
@@ -92,7 +188,39 @@
   <p class="meta mono">prod. nevere · free non-exclusive lease</p>
 
   <section class="player-card" aria-label="Moon Phase player and actions">
-    <audio controls preload="metadata" src="/moon-phase.mp3">Your browser does not support audio playback.</audio>
+  <div class="resume-transfer" id="resume-transfer" role="status">
+    <span id="resume-transfer-copy">continue from the homepage</span>
+    <button type="button" id="resume-transfer-button">resume</button>
+  </div>
+    <audio id="beat-audio" preload="metadata" src="/moon-phase.mp3"></audio>
+    <div class="beat-player">
+      <button class="bp-play" id="bp-play" type="button" aria-label="Play Moon Phase">
+        <svg class="ring" viewBox="0 0 32 32" aria-hidden="true">
+          <circle class="ring-track" cx="16" cy="16" r="14.5"/>
+          <circle class="ring-progress" cx="16" cy="16" r="14.5"/>
+        </svg>
+        <svg class="icon-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+      </button>
+      <div class="bp-progress-wrap">
+        <div class="bp-track" aria-hidden="true">
+          <div class="bp-progress" id="bp-progress"></div>
+          <div class="bp-playhead" id="bp-playhead"></div>
+        </div>
+        <div class="bp-scrub" id="bp-scrub" role="slider" tabindex="0"
+             aria-label="Seek position" aria-valuemin="0" aria-valuemax="1000"
+             aria-valuenow="0" aria-valuetext="0:00"></div>
+      </div>
+      <span class="bp-time mono" id="bp-time">0:00 / 0:00</span>
+      <button class="bp-loop" id="bp-loop" type="button" aria-label="Loop: off" aria-pressed="false" title="Loop: off">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="17 1 21 5 17 9"></polyline>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+          <polyline points="7 23 3 19 7 15"></polyline>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+      </button>
+    </div>
     <div class="actions">
       <a class="action primary display" href="/moon-phase.mp3" download="Moon Phase.mp3">download free</a>
       <a class="action secondary mono" href="/?beat=moon-phase#contact">ask about exclusive</a>
@@ -104,13 +232,170 @@
     <h2 class="display">license</h2>
     <div class="license-copy">
       <p>free non-exclusive lease. credit required: <strong>prod. nevere</strong>. the beat itself may not be resold or redistributed as-is. ownership of the underlying composition remains with nevere.</p>
-      <p style="margin-top:14px;"><a href="/terms.html">view full terms →</a></p>
+      <p style="margin-top:14px;"><a href="/terms.html?return=/beats/moon-phase/">view full terms →</a></p>
     </div>
   </section>
 
   <footer class="mono"><span>© 2026 nevere</span><span>Moon Phase · 87 bpm · C maj</span></footer>
 </main>
 <script>
+  const audio = document.getElementById('beat-audio');
+  const playButton = document.getElementById('bp-play');
+  const scrub = document.getElementById('bp-scrub');
+  const progressFill = document.getElementById('bp-progress');
+  const playhead = document.getElementById('bp-playhead');
+  const timeLabel = document.getElementById('bp-time');
+  const loopButton = document.getElementById('bp-loop');
+  const ringProgress = playButton.querySelector('.ring-progress');
+  const RING_CIRCUMFERENCE = 2 * Math.PI * 14.5;
+  let scrubbing = false;
+  let scrubValue = 0;
+  let progressRaf = null;
+
+  function fmtTime(seconds) {
+    if (!Number.isFinite(seconds)) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${String(secs).padStart(2, '0')}`;
+  }
+
+  function setProgress(fraction) {
+    const clamped = Math.max(0, Math.min(1, fraction || 0));
+    const percent = `${(clamped * 100).toFixed(3)}%`;
+    if (!scrubbing) scrubValue = Math.round(clamped * 1000);
+    scrub.setAttribute('aria-valuenow', String(Math.round(clamped * 1000)));
+    scrub.setAttribute('aria-valuetext', fmtTime(audio.duration ? clamped * audio.duration : 0));
+    progressFill.style.width = percent;
+    playhead.style.left = percent;
+    ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - clamped);
+  }
+
+  function stopProgressLoop() {
+    if (progressRaf) cancelAnimationFrame(progressRaf);
+    progressRaf = null;
+  }
+
+  function startProgressLoop() {
+    stopProgressLoop();
+    const draw = () => {
+      if (!scrubbing && audio.duration) {
+        setProgress(audio.currentTime / audio.duration);
+        renderTime();
+      }
+      if (!audio.paused && !audio.ended) {
+        progressRaf = requestAnimationFrame(draw);
+      } else {
+        progressRaf = null;
+      }
+    };
+    progressRaf = requestAnimationFrame(draw);
+  }
+
+  function renderTime(current = audio.currentTime) {
+    timeLabel.textContent = `${fmtTime(current)} / ${fmtTime(audio.duration)}`;
+  }
+
+  function syncPlayState() {
+    const playing = !audio.paused && !audio.ended;
+    playButton.classList.toggle('on', playing);
+    playButton.setAttribute('aria-label', playing ? "Pause Moon Phase" : "Play Moon Phase");
+    if (playing) startProgressLoop();
+    else stopProgressLoop();
+  }
+
+  playButton.addEventListener('click', () => {
+    if (audio.paused || audio.ended) {
+      audio.play().catch((err) => console.error('Playback failed:', err));
+    } else {
+      audio.pause();
+    }
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+    renderTime();
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!scrubbing && audio.duration) setProgress(audio.currentTime / audio.duration);
+    if (!scrubbing) renderTime();
+  });
+
+  audio.addEventListener('play', syncPlayState);
+  audio.addEventListener('pause', syncPlayState);
+  audio.addEventListener('ended', () => {
+    syncPlayState();
+    if (!audio.loop) {
+      setProgress(1);
+      renderTime(audio.duration);
+    }
+  });
+
+  function fractionFromPointer(event) {
+    const rect = scrub.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  }
+
+  function previewSeek(fraction) {
+    scrubbing = true;
+    scrubValue = Math.round(fraction * 1000);
+    setProgress(fraction);
+    if (audio.duration) renderTime(fraction * audio.duration);
+  }
+
+  function commitSeek(fraction) {
+    scrubValue = Math.round(fraction * 1000);
+    if (audio.duration) audio.currentTime = fraction * audio.duration;
+    scrubbing = false;
+    setProgress(audio.duration ? audio.currentTime / audio.duration : fraction);
+    renderTime();
+    if (!audio.paused && !audio.ended) startProgressLoop();
+  }
+
+  scrub.addEventListener('pointerdown', (event) => {
+    scrub.setPointerCapture(event.pointerId);
+    previewSeek(fractionFromPointer(event));
+  });
+
+  scrub.addEventListener('pointermove', (event) => {
+    if (!scrubbing) return;
+    previewSeek(fractionFromPointer(event));
+  });
+
+  scrub.addEventListener('pointerup', (event) => {
+    commitSeek(fractionFromPointer(event));
+    if (scrub.hasPointerCapture(event.pointerId)) scrub.releasePointerCapture(event.pointerId);
+  });
+
+  scrub.addEventListener('pointercancel', () => {
+    scrubbing = false;
+    setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+    renderTime();
+  });
+
+  scrub.addEventListener('keydown', (event) => {
+    const step = event.shiftKey ? 50 : 10;
+    let nextValue = scrubValue;
+
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') nextValue -= step;
+    else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') nextValue += step;
+    else if (event.key === 'Home') nextValue = 0;
+    else if (event.key === 'End') nextValue = 1000;
+    else return;
+
+    event.preventDefault();
+    nextValue = Math.max(0, Math.min(1000, nextValue));
+    commitSeek(nextValue / 1000);
+  });
+
+  loopButton.addEventListener('click', () => {
+    audio.loop = !audio.loop;
+    loopButton.classList.toggle('on', audio.loop);
+    loopButton.setAttribute('aria-pressed', String(audio.loop));
+    loopButton.setAttribute('aria-label', audio.loop ? 'Loop: on' : 'Loop: off');
+    loopButton.title = audio.loop ? 'Loop: on' : 'Loop: off';
+  });
+
   const shareButton = document.getElementById('share-beat');
   const shareData = {
     title: "Moon Phase \u2014 prod. nevere",
@@ -129,6 +414,57 @@
       setTimeout(() => { shareButton.textContent = original; }, 1500);
     }
   });
+
+  // Restore playback transferred from the homepage.
+  const transferBox = document.getElementById('resume-transfer');
+  const transferCopy = document.getElementById('resume-transfer-copy');
+  const transferButton = document.getElementById('resume-transfer-button');
+
+  function readPlaybackTransfer() {
+    try {
+      const raw = sessionStorage.getItem('neverePlaybackTransfer');
+      if (!raw) return null;
+      const state = JSON.parse(raw);
+      const fresh = Date.now() - Number(state.savedAt || 0) < 15 * 60 * 1000;
+      if (!fresh || state.slug !== "moon-phase") return null;
+      return state;
+    } catch {
+      return null;
+    }
+  }
+
+  function showResumeTransfer(state) {
+    transferCopy.textContent = `continue from ${fmtTime(Number(state.currentTime || 0))}`;
+    transferBox.classList.add('show');
+    transferButton.onclick = () => {
+      audio.currentTime = Math.min(Number(state.currentTime || 0), audio.duration || Number(state.currentTime || 0));
+      audio.volume = Math.max(0, Math.min(1, Number(state.volume ?? 1)));
+      audio.play().then(() => {
+        transferBox.classList.remove('show');
+        sessionStorage.removeItem('neverePlaybackTransfer');
+      }).catch((err) => console.error('Resume failed:', err));
+    };
+  }
+
+  const transferredPlayback = readPlaybackTransfer();
+  if (transferredPlayback) {
+    const applyTransferredPosition = () => {
+      audio.currentTime = Math.min(Number(transferredPlayback.currentTime || 0), audio.duration || Number(transferredPlayback.currentTime || 0));
+      audio.volume = Math.max(0, Math.min(1, Number(transferredPlayback.volume ?? 1)));
+      setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+      renderTime();
+      if (transferredPlayback.wasPlaying) {
+        audio.play().then(() => {
+          sessionStorage.removeItem('neverePlaybackTransfer');
+        }).catch(() => showResumeTransfer(transferredPlayback));
+      } else {
+        showResumeTransfer(transferredPlayback);
+      }
+    };
+    if (audio.readyState >= 1) applyTransferredPosition();
+    else audio.addEventListener('loadedmetadata', applyTransferredPosition, { once:true });
+  }
+
 </script>
 </body>
 </html>
