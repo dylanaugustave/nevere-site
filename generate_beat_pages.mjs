@@ -5,17 +5,17 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const homepagePath = path.join(root, "index.html");
+const homeScriptPath = path.join(root, "assets", "js", "home.js");
 const templatePath = path.join(root, "beats", "po-mans-dreams", "index.html");
 
-const homepage = fs.readFileSync(homepagePath, "utf8");
+const homeScript = fs.readFileSync(homeScriptPath, "utf8");
 const template = fs.readFileSync(templatePath, "utf8");
 
 const beatPattern =
   /\{\s*id:\s*"([^"]+)",\s*title:\s*"([^"]+)",\s*bpm:\s*(\d+),\s*key:\s*"([^"]+)",\s*tags:\s*\[([^\]]*)\][\s\S]*?audioSrc:\s*"([^"]+)"/g;
 
 const beats = [];
-for (const match of homepage.matchAll(beatPattern)) {
+for (const match of homeScript.matchAll(beatPattern)) {
   beats.push({
     id: match[1],
     title: match[2],
@@ -28,7 +28,7 @@ for (const match of homepage.matchAll(beatPattern)) {
 }
 
 if (beats.length !== 24) {
-  throw new Error(`Expected 24 beats in index.html, found ${beats.length}.`);
+  throw new Error(`Expected 24 beats in assets/js/home.js, found ${beats.length}.`);
 }
 
 const escapeHtml = (value) =>

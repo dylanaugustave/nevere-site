@@ -1,0 +1,454 @@
+.beat-page {
+  min-height: 100vh;
+  color-scheme: dark;
+}
+
+.beat-page .ambient-bg {
+  position: fixed;
+  inset: -100px;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 700px 600px at 20% 20%, rgba(255, 176, 32, 0.09), transparent 70%),
+    radial-gradient(ellipse 800px 700px at 80% 70%, rgba(31, 111, 102, 0.12), transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.beat-page :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.beat-page > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px clamp(20px, 5vw, 64px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(13, 11, 10, 0.88);
+  backdrop-filter: blur(8px);
+}
+
+.beat-page .brand {
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.beat-page .back {
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.beat-page .back:hover {
+  color: var(--accent);
+}
+
+.beat-page main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(54px, 9vw, 110px) clamp(20px, 5vw, 64px) 120px;
+}
+
+.beat-page .eyebrow {
+  margin-bottom: 18px;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.beat-page h1 {
+  max-width: 10ch;
+  margin-bottom: 22px;
+  font-size: clamp(52px, 10vw, 112px);
+  line-height: 0.92;
+}
+
+.beat-page .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.beat-page .tag {
+  padding: 3px 9px;
+  border: 1px solid var(--accent2);
+  border-radius: 2px;
+  color: var(--accent2);
+  font-size: 11px;
+}
+
+.beat-page .meta {
+  margin-bottom: 34px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.beat-page .player-card {
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.beat-page audio {
+  display: none;
+}
+
+.beat-page .beat-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  margin-bottom: 18px;
+}
+
+.beat-page .bp-play {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.beat-page .bp-play .ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.beat-page .bp-play .ring-track {
+  fill: none;
+  stroke: #463e33;
+  stroke-width: 2;
+}
+
+.beat-page .bp-play .ring-progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-dasharray: 91.1;
+  stroke-dashoffset: 91.1;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.beat-page .bp-play .icon-play,
+.beat-page .bp-play .icon-pause {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.beat-page .bp-play .icon-play {
+  margin-left: 1px;
+  opacity: 1;
+}
+
+.beat-page .bp-play.on .icon-play {
+  opacity: 0;
+}
+
+.beat-page .bp-play.on .icon-pause {
+  opacity: 1;
+}
+
+.beat-page .bp-progress-wrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  height: 24px;
+}
+
+.beat-page .bp-track {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 4px;
+  overflow: visible;
+  border-radius: 2px;
+  background: #463e33;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.beat-page .bp-progress {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.beat-page .bp-playhead {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 0;
+  width: 6px;
+  height: 20px;
+  border: 2px solid #f3efe8;
+  border-radius: 2px;
+  background: #ffb020;
+  box-shadow: 0 0 0 1px #0d0b0a, 0 0 9px rgba(255, 176, 32, 0.45);
+  color-scheme: dark;
+  forced-color-adjust: none;
+  transform: translate(-50%, -50%);
+  will-change: left;
+  -webkit-print-color-adjust: exact;
+}
+
+@media (prefers-color-scheme: light), (prefers-color-scheme: dark) {
+  .beat-page .bp-playhead {
+    border-color: #f3efe8 !important;
+    background: #ffb020 !important;
+    box-shadow: 0 0 0 1px #0d0b0a, 0 0 9px rgba(255, 176, 32, 0.45) !important;
+  }
+}
+
+.beat-page .bp-scrub {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  width: 100%;
+  height: 24px;
+  outline: none;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+}
+
+.beat-page .bp-scrub:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.beat-page .bp-time {
+  min-width: 72px;
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.beat-page .bp-loop {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.beat-page .bp-loop svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.beat-page .bp-loop.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.beat-page .actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.beat-page .action {
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-decoration: none;
+}
+
+.beat-page .action.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #1a1305;
+  font-weight: 700;
+}
+
+.beat-page .action.secondary:hover,
+.beat-page .share:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.beat-page .share {
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.beat-page .license {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+  gap: 34px;
+  margin-top: 44px;
+}
+
+.beat-page .license h2 {
+  font-size: 30px;
+}
+
+.beat-page .license-copy {
+  max-width: 55ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.beat-page .license-copy a {
+  color: var(--accent);
+}
+
+.beat-page .license-copy p + p {
+  margin-top: 14px;
+}
+
+.beat-page footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 90px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.beat-page .resume-transfer {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.beat-page .resume-transfer.show {
+  display: flex;
+}
+
+.beat-page .resume-transfer button {
+  appearance: none;
+  padding: 8px 12px;
+  border: 0;
+  background: var(--accent);
+  color: #0d0b0a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 650px) {
+  .beat-page main {
+    padding-top: 54px;
+    padding-bottom: 88px;
+  }
+
+  .beat-page .license {
+    grid-template-columns: 1fr;
+    margin-top: 38px;
+  }
+
+  .beat-page h1 {
+    font-size: clamp(48px, 17vw, 78px);
+  }
+
+  .beat-page .beat-player {
+    gap: 8px;
+  }
+
+  .beat-page .bp-play {
+    width: 30px;
+    height: 30px;
+  }
+
+  .beat-page .bp-time {
+    min-width: 66px;
+    font-size: 10px;
+  }
+
+  .beat-page .bp-loop {
+    width: 34px;
+    height: 28px;
+  }
+
+  .beat-page .actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  .beat-page .action {
+    width: 100%;
+    padding: 11px 16px;
+    text-align: center;
+  }
+
+  .beat-page .share {
+    width: auto;
+    justify-self: center;
+    padding: 9px 18px;
+    border: none;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .beat-page footer {
+    margin-top: 68px;
+  }
+}
+
+@media (max-width: 640px) {
+  .beat-page .resume-transfer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .beat-page .resume-transfer button {
+    width: 100%;
+  }
+}
