@@ -389,6 +389,16 @@ let activeTag = null;
 
   const PB_RING_CIRCUMFERENCE = 2 * Math.PI * 16.5;
 
+  function setScrubProgress(scrub) {
+    const min = Number(scrub.min);
+    const max = Number(scrub.max);
+    const value = Number(scrub.value);
+    const range = max - min;
+    const fraction = range > 0 && Number.isFinite(value) ? (value - min) / range : 0;
+    const percent = Math.max(0, Math.min(1, fraction)) * 100;
+    scrub.style.setProperty("--pb-scrub-progress", percent + "%");
+  }
+
   function setRing(btn, fraction) {
     const clamped = Math.max(0, Math.min(1, fraction));
     const ring = btn.querySelector(".ring-progress");
@@ -396,7 +406,10 @@ let activeTag = null;
     const pbRing = document.querySelector(".pb-ring-progress");
     if (pbRing) pbRing.style.strokeDashoffset = PB_RING_CIRCUMFERENCE * (1 - clamped);
     const scrub = document.getElementById("pb-scrub");
-    if (scrub && !scrubbing) scrub.value = Math.round(clamped * 1000);
+    if (scrub && !scrubbing) {
+      scrub.value = Math.round(clamped * 1000);
+      setScrubProgress(scrub);
+    }
   }
 
   function startRing(btn, getFraction) {
@@ -808,6 +821,7 @@ let activeTag = null;
   });
   pbScrub.addEventListener("input", () => {
     scrubbing = true;
+    setScrubProgress(pbScrub);
     if (lastBeat && audioCache[lastBeat.id]) {
       const audio = audioCache[lastBeat.id];
       if (audio.duration && isFinite(audio.duration)) {
