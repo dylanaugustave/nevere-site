@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="terms-page">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,37 +8,13 @@
 <meta name="theme-color" content="#0d0b0a">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap');
-  :root{
-    --bg:#0d0b0a; --line:#2a2521; --text:#f3efe8; --muted:#8f8579; --accent:#ffb020;
-    color-scheme:dark;
-  }
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  body{
-    background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
-    text-transform:lowercase; line-height:1.7;
-  }
-  .display{ font-family:'Space Grotesk',sans-serif; }
-  .mono{ font-family:'IBM Plex Mono',monospace; letter-spacing:0.04em; }
-  main{ max-width:640px; margin:0 auto; padding:60px clamp(20px,5vw,40px) 100px; }
-  .rule{ width:40px; height:3px; background:var(--accent); margin-bottom:22px; }
-  h1{ font-size:clamp(28px,6vw,40px); font-weight:700; margin-bottom:8px; }
-  .sub{ color:var(--muted); font-size:12px; margin-bottom:48px; }
-  h2{ color:var(--accent); font-size:14px; font-weight:700; margin:36px 0 10px; }
-  p, li{ font-size:15px; color:var(--text); }
-  ol{ padding-left:22px; display:flex; flex-direction:column; gap:8px; }
-  a{ color:var(--accent); }
-  .back{ display:inline-block; margin-bottom:40px; font-size:13px; text-decoration:none; color:var(--muted); }
-  .back:hover{ color:var(--text); }
-  .dl{
-    display:inline-block; margin-top:48px; background:var(--accent); color:#1a1305;
-    font-weight:700; text-decoration:none; padding:13px 24px; font-size:13px; letter-spacing:0.06em;
-  }
-  footer{ margin-top:60px; color:var(--muted); font-size:11px; }
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap">
+<link rel="stylesheet" href="/assets/css/site.css">
+<script src="/assets/js/site.js" defer></script>
 </head>
-<body>
+<body class="terms-page">
 <main>
   <a class="back mono" id="terms-back" href="/">← back to neverebeats.com</a>
   <div class="rule"></div>
@@ -70,15 +46,5 @@
 
   <footer class="mono">© 2026 nevere. this document is a plain-language license summary, not legal advice.</footer>
 </main>
-<script>
-  const backLink = document.getElementById('terms-back');
-  const requestedReturn = new URLSearchParams(window.location.search).get('return');
-  const safeBeatPath = /^\/beats\/[a-z0-9-]+\/$/;
-
-  if (requestedReturn && safeBeatPath.test(requestedReturn)) {
-    backLink.href = requestedReturn;
-    backLink.textContent = '← back to beat';
-  }
-</script>
 </body>
 </html>
