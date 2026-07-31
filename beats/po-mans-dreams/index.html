@@ -151,11 +151,28 @@
     .actions{ display:grid; gap:10px; }
     .action{ width:100%; text-align:center; padding:11px 16px; }
     .share{
-      width:auto; justify-self:start; border:none; padding:7px 0;
-      text-align:left; color:var(--muted);
+      width:auto; justify-self:center; border:none; padding:9px 18px;
+      text-align:center; color:var(--muted);
     }
     footer{ margin-top:68px; }
   }
+
+  .resume-transfer{
+    display:none; align-items:center; justify-content:space-between; gap:14px;
+    margin:0 0 16px; padding:12px 14px; border:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.04em;
+    color:var(--muted); background:rgba(255,255,255,.025);
+  }
+  .resume-transfer.show{display:flex}
+  .resume-transfer button{
+    appearance:none; border:0; padding:8px 12px; cursor:pointer;
+    background:var(--accent); color:#0d0b0a; font:inherit; font-weight:700;
+  }
+  @media(max-width:640px){
+    .resume-transfer{align-items:stretch; flex-direction:column}
+    .resume-transfer button{width:100%}
+  }
+
 </style>
 </head>
 <body>
@@ -171,6 +188,10 @@
   <p class="meta mono">prod. nevere · free non-exclusive lease</p>
 
   <section class="player-card" aria-label="Po&#x27; Man&#x27;s Dreams player and actions">
+  <div class="resume-transfer" id="resume-transfer" role="status">
+    <span id="resume-transfer-copy">continue from the homepage</span>
+    <button type="button" id="resume-transfer-button">resume</button>
+  </div>
     <audio id="beat-audio" preload="metadata" src="/po-mans-dreams.mp3"></audio>
     <div class="beat-player">
       <button class="bp-play" id="bp-play" type="button" aria-label="Play Po&#x27; Man&#x27;s Dreams">
@@ -211,7 +232,7 @@
     <h2 class="display">license</h2>
     <div class="license-copy">
       <p>free non-exclusive lease. credit required: <strong>prod. nevere</strong>. the beat itself may not be resold or redistributed as-is. ownership of the underlying composition remains with nevere.</p>
-      <p style="margin-top:14px;"><a href="/terms.html">view full terms →</a></p>
+      <p style="margin-top:14px;"><a href="/terms.html?return=/beats/po-mans-dreams/">view full terms →</a></p>
     </div>
   </section>
 
@@ -393,6 +414,57 @@
       setTimeout(() => { shareButton.textContent = original; }, 1500);
     }
   });
+
+  // Restore playback transferred from the homepage.
+  const transferBox = document.getElementById('resume-transfer');
+  const transferCopy = document.getElementById('resume-transfer-copy');
+  const transferButton = document.getElementById('resume-transfer-button');
+
+  function readPlaybackTransfer() {
+    try {
+      const raw = sessionStorage.getItem('neverePlaybackTransfer');
+      if (!raw) return null;
+      const state = JSON.parse(raw);
+      const fresh = Date.now() - Number(state.savedAt || 0) < 15 * 60 * 1000;
+      if (!fresh || state.slug !== "po-mans-dreams") return null;
+      return state;
+    } catch {
+      return null;
+    }
+  }
+
+  function showResumeTransfer(state) {
+    transferCopy.textContent = `continue from ${fmtTime(Number(state.currentTime || 0))}`;
+    transferBox.classList.add('show');
+    transferButton.onclick = () => {
+      audio.currentTime = Math.min(Number(state.currentTime || 0), audio.duration || Number(state.currentTime || 0));
+      audio.volume = Math.max(0, Math.min(1, Number(state.volume ?? 1)));
+      audio.play().then(() => {
+        transferBox.classList.remove('show');
+        sessionStorage.removeItem('neverePlaybackTransfer');
+      }).catch((err) => console.error('Resume failed:', err));
+    };
+  }
+
+  const transferredPlayback = readPlaybackTransfer();
+  if (transferredPlayback) {
+    const applyTransferredPosition = () => {
+      audio.currentTime = Math.min(Number(transferredPlayback.currentTime || 0), audio.duration || Number(transferredPlayback.currentTime || 0));
+      audio.volume = Math.max(0, Math.min(1, Number(transferredPlayback.volume ?? 1)));
+      setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+      renderTime();
+      if (transferredPlayback.wasPlaying) {
+        audio.play().then(() => {
+          sessionStorage.removeItem('neverePlaybackTransfer');
+        }).catch(() => showResumeTransfer(transferredPlayback));
+      } else {
+        showResumeTransfer(transferredPlayback);
+      }
+    };
+    if (audio.readyState >= 1) applyTransferredPosition();
+    else audio.addEventListener('loadedmetadata', applyTransferredPosition, { once:true });
+  }
+
 </script>
 </body>
 </html>
